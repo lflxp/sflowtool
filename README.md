@@ -76,114 +76,110 @@ those functions output json used by logstash to collected
 
 ```
 {
-                           "Dropped" => 0,
-                   "OutputInterface" => 112,
-                              "Data" => {
-        "DatagramVersion" => 5,
-            "AgentUptime" => 2031516848,
-               "Datagram" => {
-            "SrcPort" => "4493",
-              "DstIP" => "1.6.1.1",
-            "DstPort" => "9999(distinct)",
-             "SrcMac" => "70:ba:ee:04:e5:b5",
-              "SrcIP" => "1.6.1.2",
-             "DstMac" => "70:4d:7b:e8:c8:ee"
-        },
-             "SubAgentID" => 2,
-           "AgentAddress" => "1.6.1.1",
-         "SequenceNumber" => 613264,
-            "SampleCount" => 2
-    },
-                      "SampleLength" => 180,
-                      "SamplingRate" => 1000,
-             "SFlowExtendedUserFlow" => {
-         "DestinationCharSet" => "",
-        "SFlowBaseFlowRecord" => {
-                    "Format" => "",
-              "EnterpriseID" => "",
-            "FlowDataLength" => 0
-        },
-          "DestinationUserID" => "",
-              "SourceCharSet" => "",
-               "SourceUserID" => ""
-    },
-                     "SourceIDIndex" => "112",
-                      "EnterpriseID" => "Standard SFlow",
-                              "path" => "/tmp/123",
-              "InputInterfaceFormat" => 0,
-                            "Format" => "Expanded Flow Sample",
-                        "@timestamp" => 2017-10-27T06:14:41.138Z,
-          "SFlowRawPacketFlowRecord" => {
-                "FrameLength" => 68,
-               "HeaderLength" => 64,
-                     "Header" => {
-                  "SrcPort" => "63422",
-             "Ipv4_version" => 4,
-                 "Ipv4_ihl" => 5,
-                 "Ipv4_ttl" => 128,
-              "FlowRecords" => 80,
-            "Ipv4_protocol" => "TCP",
-                 "Ipv4_tos" => 0,
-                  "DstPort" => "80(http)",
-                    "SrcIP" => "1.6.1.81",
-                    "Bytes" => 68,
-                  "Packets" => 1,
-                    "DstIP" => "1.1.1.2",
-                   "SrcMac" => "44:8d:5c:23:c8:9c",
-                   "DstMac" => "d4:61:ff:35:ee:f7"
-        },
-        "SFlowBaseFlowRecord" => {
-                    "Format" => "Raw Packet Flow Record",
-              "EnterpriseID" => "Standard SFlow",
-            "FlowDataLength" => 80
-        },
-             "HeaderProtocol" => "ETHERNET-ISO88023",
-             "PayloadRemoved" => 4
-    },
-                    "InputInterface" => 109,
-                    "SequenceNumber" => 4140992,
-             "OutputInterfaceFormat" => 0,
-                          "@version" => "1",
-                              "host" => "lxpdeiMac.local",
-     "SFlowExtendedSwitchFlowRecord" => {
-         "SFlowBaseFlowRecord" => {
-                    "Format" => "Extended Switch Flow Record",
-              "EnterpriseID" => "Standard SFlow",
-            "FlowDataLength" => 16
-        },
-        "OutgoingVLANPriority" => 0,
-        "IncomingVLANPriority" => 0,
-                "IncomingVLAN" => 120,
-                "OutgoingVLAN" => 0
-    },
-                       "RecordCount" => 3,
-                     "SourceIDClass" => "Single Interface",
-                        "SamplePool" => 4151408156,
-     "SFlowExtendedRouterFlowRecord" => {
-             "NextHopSourceMask" => 21,
-           "SFlowBaseFlowRecord" => {
-                    "Format" => "Extended Router Flow Record",
-              "EnterpriseID" => "Standard SFlow",
-            "FlowDataLength" => 16
-        },
-        "NextHopDestinationMask" => 0,
-                       "NextHop" => "1.6.1.5"
-    },
-    "SFlowExtendedGatewayFlowRecord" => {
-                         "AS" => 0,
-                  "LocalPref" => 0,
-                     "ASPath" => nil,
-                "Communities" => nil,
-                    "NextHop" => "",
-                     "PeerAS" => 0,
-        "SFlowBaseFlowRecord" => {
-                    "Format" => "",
-              "EnterpriseID" => "",
-            "FlowDataLength" => 0
-        },
-                   "SourceAS" => 0,
-                "ASPathCount" => 0
-    }
+   "Data": {
+      "Datagram": {
+         "SrcMac": "70:99:99:04:99:99",
+         "DstMac": "70:4d:99:99:99:99",
+         "SrcIP": "99.99.99.205",
+         "DstIP": "99.99.99.8",
+         "SrcPort": "9999(distinct)",
+         "DstPort": "9999(distinct)"
+      },
+      "DatagramVersion": 5,
+      "AgentAddress": "99.99.99.53",
+      "SubAgentID": 2,
+      "SequenceNumber": 1275756,
+      "AgentUptime": 3164307152,
+      "SampleCount": 2
+   },
+   "EnterpriseID": "Standard SFlow",
+   "Format": "Expanded Flow Sample",
+   "SampleLength": 244,
+   "SequenceNumber": 1251869,
+   "SourceIDClass": "Single Interface",
+   "SourceIDIndex": "71",
+   "SamplingRate": 20000,
+   "SamplePool": 3990725044,
+   "Dropped": 0,
+   "InputInterfaceFormat": 0,
+   "InputInterface": 71,
+   "OutputInterfaceFormat": 0,
+   "OutputInterface": 114,
+   "RecordCount": 3,
+   "SFlowRawPacketFlowRecord": {
+      "SFlowBaseFlowRecord": {
+         "EnterpriseID": "Standard SFlow",
+         "Format": "Raw Packet Flow Record",
+         "FlowDataLength": 144
+      },
+      "HeaderProtocol": "ETHERNET-ISO88023",
+      "FrameLength": 1518,
+      "PayloadRemoved": 4,
+      "HeaderLength": 128,
+      "Header": {
+         "FlowRecords": 144,
+         "Packets": 1,
+         "Bytes": 1518,
+         "SrcMac": "99:8c:40:99:99:99",
+         "DstMac": "99:8c:40:99:99:ab",
+         "SrcIP": "99.99.99.26",
+         "DstIP": "99.99.99.57",
+         "Ipv4_version": 4,
+         "Ipv4_ihl": 5,
+         "Ipv4_tos": 0,
+         "Ipv4_ttl": 62,
+         "Ipv4_protocol": "TCP",
+         "SrcPort": "49165",
+         "DstPort": "33851"
+      }
+   },
+   "SFlowExtendedSwitchFlowRecord": {
+      "SFlowBaseFlowRecord": {
+         "EnterpriseID": "Standard SFlow",
+         "Format": "Extended Switch Flow Record",
+         "FlowDataLength": 16
+      },
+      "IncomingVLAN": 0,
+      "IncomingVLANPriority": 0,
+      "OutgoingVLAN": 0,
+      "OutgoingVLANPriority": 0
+   },
+   "SFlowExtendedRouterFlowRecord": {
+      "SFlowBaseFlowRecord": {
+         "EnterpriseID": "Standard SFlow",
+         "Format": "Extended Router Flow Record",
+         "FlowDataLength": 16
+      },
+      "NextHop": "99.99.99.206",
+      "NextHopSourceMask": 22,
+      "NextHopDestinationMask": 21
+   },
+   "SFlowExtendedGatewayFlowRecord": {
+      "SFlowBaseFlowRecord": {
+         "EnterpriseID": "",
+         "Format": "",
+         "FlowDataLength": 0
+      },
+      "NextHop": "",
+      "AS": 0,
+      "SourceAS": 0,
+      "PeerAS": 0,
+      "ASPathCount": 0,
+      "ASPath": null,
+      "Communities": null,
+      "LocalPref": 0
+   },
+   "SFlowExtendedUserFlow": {
+      "SFlowBaseFlowRecord": {
+         "EnterpriseID": "",
+         "Format": "",
+         "FlowDataLength": 0
+      },
+      "SourceCharSet": "",
+      "SourceUserID": "",
+      "DestinationCharSet": "",
+      "DestinationUserID": ""
+   }
 }
 ```
 
@@ -195,91 +191,87 @@ those functions output json used by logstash to collected
 
 ```
 {
-                             "Data" => {
-        "DatagramVersion" => 5,
-            "AgentUptime" => 3163458152,
-               "Datagram" => {
-            "SrcPort" => "9999(distinct)",
-              "DstIP" => "1.6.1.1",
-            "DstPort" => "9999(distinct)",
-             "SrcMac" => "70:ba:ff:f4:e5:bf",
-              "SrcIP" => "1.1.1.2",
-             "DstMac" => "f0:4d:7b:bf:cf:ff"
-        },
-             "SubAgentID" => 2,
-           "AgentAddress" => "4.4.4.53",
-         "SequenceNumber" => 1270179,
-            "SampleCount" => 3
-    },
-            "SFlowEthernetCounters" => {
-                        "FCSErrors" => 0,
-                    "SQETestErrors" => 0,
-                     "SymbolErrors" => 0,
-            "DeferredTransmissions" => 0,
-                   "LateCollisions" => 0,
-            "SingleCollisionFrames" => 0,
-              "ExcessiveCollisions" => 0,
-         "InternalMacReceiveErrors" => 0,
-           "SFlowBaseCounterRecord" => {
-                    "Format" => "Ethernet Interface Counters",
-              "EnterpriseID" => "Standard SFlow",
-            "FlowDataLength" => 52
-        },
-        "InternalMacTransmitErrors" => 0,
-                    "FrameTooLongs" => 0,
-                  "AlignmentErrors" => 0,
-               "CarrierSenseErrors" => 0,
-          "MultipleCollisionFrames" => 0
-    },
-                     "SampleLength" => 172,
-                    "SourceIDIndex" => "72",
-                     "EnterpriseID" => "Standard SFlow",
-                             "path" => "/tmp/123",
-                           "Format" => "Expanded Counter Sample",
-                       "@timestamp" => 2017-10-27T07:29:31.012Z,
-                   "SequenceNumber" => 2853,
-                         "@version" => "1",
-                             "host" => "lxpdeiMac.local",
-           "SFlowProcessorCounters" => {
-                     "OneMinCpu" => 0,
-                   "TotalMemory" => 0,
-        "SFlowBaseCounterRecord" => {
-                    "Format" => "",
-              "EnterpriseID" => "",
-            "FlowDataLength" => 0
-        },
-                    "FiveMinCpu" => 0,
-                    "FiveSecCpu" => 0,
-                    "FreeMemory" => 0
-    },
-                      "RecordCount" => 2,
-                    "SourceIDClass" => "Single Interface",
-    "SFlowGenericInterfaceCounters" => {
-                        "IfType" => 6,
-             "IfInMulticastPkts" => 82195,
-                 "IfOutDiscards" => 27715,
-             "IfPromiscuousMode" => 2,
-             "IfInBroadcastPkts" => 1,
-                      "IfStatus" => 3,
-                  "IfInDiscards" => 0,
-        "SFlowBaseCounterRecord" => {
-                    "Format" => "Generic Interface Counters",
-              "EnterpriseID" => "Standard SFlow",
-            "FlowDataLength" => 88
-        },
-                   "IfDirection" => 1,
-            "IfOutBroadcastPkts" => 0,
-                       "IfSpeed" => 10000000000,
-                   "IfOutErrors" => 0,
-                 "IfInUcastPkts" => 4108242914,
-                    "IfInOctets" => 103765034886283,
-            "IfOutMulticastPkts" => 82441,
-                       "IfIndex" => 72,
-                   "IfOutOctets" => 102304620226454,
-                "IfOutUcastPkts" => 3022758445,
-                    "IfInErrors" => 0,
-             "IfInUnknownProtos" => 0
-    }
+   "Data": {
+      "Datagram": {
+         "SrcMac": "99:99:ef:04:99:99",
+         "DstMac": "99:99:7b:b8:99:99",
+         "SrcIP": "99.99.99.205",
+         "DstIP": "99.99.99.8",
+         "SrcPort": "9999(distinct)",
+         "DstPort": "9999(distinct)"
+      },
+      "DatagramVersion": 5,
+      "AgentAddress": "99.99.99.53",
+      "SubAgentID": 2,
+      "SequenceNumber": 1280989,
+      "AgentUptime": 3164899152,
+      "SampleCount": 3
+   },
+   "EnterpriseID": "Standard SFlow",
+   "Format": "Expanded Counter Sample",
+   "SampleLength": 172,
+   "SequenceNumber": 2865,
+   "SourceIDClass": "Single Interface",
+   "SourceIDIndex": "72",
+   "RecordCount": 2,
+   "SFlowGenericInterfaceCounters": {
+      "SFlowBaseCounterRecord": {
+         "EnterpriseID": "Standard SFlow",
+         "Format": "Generic Interface Counters",
+         "FlowDataLength": 88
+      },
+      "IfIndex": 72,
+      "IfType": 6,
+      "IfSpeed": 10000000000,
+      "IfDirection": 1,
+      "IfStatus": 3,
+      "IfInOctets": 104160000662999,
+      "IfInUcastPkts": 92171299,
+      "IfInMulticastPkts": 82243,
+      "IfInBroadcastPkts": 1,
+      "IfInDiscards": 0,
+      "IfInErrors": 0,
+      "IfInUnknownProtos": 0,
+      "IfOutOctets": 992414418961899,
+      "IfOutUcastPkts": 9939958927,
+      "IfOutMulticastPkts": 82489,
+      "IfOutBroadcastPkts": 0,
+      "IfOutDiscards": 28017,
+      "IfOutErrors": 0,
+      "IfPromiscuousMode": 2
+   },
+   "SFlowEthernetCounters": {
+      "SFlowBaseCounterRecord": {
+         "EnterpriseID": "Standard SFlow",
+         "Format": "Ethernet Interface Counters",
+         "FlowDataLength": 99
+      },
+      "AlignmentErrors": 0,
+      "FCSErrors": 0,
+      "SingleCollisionFrames": 0,
+      "MultipleCollisionFrames": 0,
+      "SQETestErrors": 0,
+      "DeferredTransmissions": 0,
+      "LateCollisions": 0,
+      "ExcessiveCollisions": 0,
+      "InternalMacTransmitErrors": 0,
+      "CarrierSenseErrors": 0,
+      "FrameTooLongs": 0,
+      "InternalMacReceiveErrors": 0,
+      "SymbolErrors": 0
+   },
+   "SFlowProcessorCounters": {
+      "SFlowBaseCounterRecord": {
+         "EnterpriseID": "",
+         "Format": "",
+         "FlowDataLength": 0
+      },
+      "FiveSecCpu": 0,
+      "OneMinCpu": 0,
+      "FiveMinCpu": 0,
+      "TotalMemory": 0,
+      "FreeMemory": 0
+   }
 }
 ```
 
@@ -287,38 +279,34 @@ those functions output json used by logstash to collected
 
 ```
 {
-                "dst_as" => 0,
-               "in_pkts" => 1,
-        "first_switched" => 536214234,
-           "l4_src_port" => 51228,
-         "ipv4_next_hop" => "10.6.32.5",
-    "sampling_algorithm" => 0,
-             "unix_nsec" => 0,
-              "unix_sec" => 1509089578,
-                  "path" => "/tmp/123",
-              "in_bytes" => 40,
-              "protocol" => 6,
-             "tcp_flags" => 17,
-                  "host" => "1.6.1.6",
-              "@version" => "1",
-           "l4_dst_port" => 80,
-                "src_as" => 0,
-           "output_snmp" => 50,
-              "dst_mask" => 0,
-               "src_tos" => 0,
-         "ipv4_dst_addr" => "1.121.1.2",
-              "src_mask" => 32,
-               "version" => 5,
-                "uptime" => 536423914,
-          "flow_records" => 25,
-          "flow_seq_num" => 245097954,
-         "ipv4_src_addr" => "1.2.3.4",
-           "engine_type" => 0,
-            "@timestamp" => 2017-10-27T07:33:10.012Z,
-             "engine_id" => 1,
-            "input_snmp" => 0,
-         "last_switched" => 536214234,
-     "sampling_interval" => 0
+   "version": 5,
+   "flow_records": 30,
+   "uptime": 537043304,
+   "unix_sec": 1509090197,
+   "unix_nsec": 0,
+   "flow_seq_num": 245226516,
+   "engine_type": 0,
+   "engine_id": 1,
+   "sampling_interval": 0,
+   "input_snmp": 50,
+   "output_snmp": 0,
+   "in_pkts": 1,
+   "in_bytes": 476,
+   "first_switched": 537025674,
+   "last_switched": 537025674,
+   "l4_src_port": 53,
+   "l4_dst_port": 60657,
+   "tcp_flags": 0,
+   "protocol": 17,
+   "src_tos": 0,
+   "src_as": 0,
+   "dst_as": 0,
+   "src_mask": 0,
+   "dst_mask": 32,
+   "host": "99.99.99.6",
+   "sampling_algorithm": 0,
+   "ipv4_src_addr": "99.99.99.19",
+   "ipv4_dst_addr": "99.99.99.25",
+   "ipv4_next_hop": "0.0.0.0"
 }
-
 ```
