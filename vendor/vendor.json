@@ -1,0 +1,79 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "g+4AgCjxvotVLox53tnXxjXuBnQ=",
+			"path": "github.com/astaxie/beego",
+			"revision": "3162da131da68f38e85765781c9d1cc419963e67",
+			"revisionTime": "2017-09-08T22:29:59Z"
+		},
+		{
+			"checksumSHA1": "zgHK1vxUJDZTXAPCw+Bls7St0Ks=",
+			"path": "github.com/astaxie/beego/config",
+			"revision": "3162da131da68f38e85765781c9d1cc419963e67",
+			"revisionTime": "2017-09-08T22:29:59Z"
+		},
+		{
+			"checksumSHA1": "9J9Yez8RBxCcxynZL4KCW0+ZTRU=",
+			"path": "github.com/astaxie/beego/context",
+			"revision": "3162da131da68f38e85765781c9d1cc419963e67",
+			"revisionTime": "2017-09-08T22:29:59Z"
+		},
+		{
+			"checksumSHA1": "MXGs366RP4mY+x7vtP8V0ko4iPM=",
+			"path": "github.com/astaxie/beego/context/param",
+			"revision": "3162da131da68f38e85765781c9d1cc419963e67",
+			"revisionTime": "2017-09-08T22:29:59Z"
+		},
+		{
+			"checksumSHA1": "Nx9dKuRvpEeNHhnpTb0yVy1t/JE=",
+			"path": "github.com/astaxie/beego/grace",
+			"revision": "3162da131da68f38e85765781c9d1cc419963e67",
+			"revisionTime": "2017-09-08T22:29:59Z"
+		},
+		{
+			"checksumSHA1": "aNA3HBmv8A9mezI/ZW92Po9I5GE=",
+			"path": "github.com/astaxie/beego/logs",
+			"revision": "3162da131da68f38e85765781c9d1cc419963e67",
+			"revisionTime": "2017-09-08T22:29:59Z"
+		},
+		{
+			"checksumSHA1": "qGvZUP7mTKGvMa3ui7kqLJQiXNc=",
+			"path": "github.com/astaxie/beego/session",
+			"revision": "3162da131da68f38e85765781c9d1cc419963e67",
+			"revisionTime": "2017-09-08T22:29:59Z"
+		},
+		{
+			"checksumSHA1": "EOoY9qbCsWnu5FlZZnMKUKkLcMk=",
+			"path": "github.com/astaxie/beego/toolbox",
+			"revision": "3162da131da68f38e85765781c9d1cc419963e67",
+			"revisionTime": "2017-09-08T22:29:59Z"
+		},
+		{
+			"checksumSHA1": "W7HBzu7HlF18vCfNPgax7xvHXB0=",
+			"path": "github.com/astaxie/beego/utils",
+			"revision": "3162da131da68f38e85765781c9d1cc419963e67",
+			"revisionTime": "2017-09-08T22:29:59Z"
+		},
+		{
+			"checksumSHA1": "CArPEPoLJwoKIPA+y0fBpbUMgr8=",
+			"path": "github.com/google/gopacket",
+			"revision": "26ec6f897fc7b8152729c2f52f91dfa54c791ca1",
+			"revisionTime": "2017-09-16T22:31:43Z"
+		},
+		{
+			"checksumSHA1": "PtXIjVa+H+JB4tf5ptb5n8mZ5Ro=",
+			"path": "github.com/google/gopacket/layers",
+			"revision": "26ec6f897fc7b8152729c2f52f91dfa54c791ca1",
+			"revisionTime": "2017-09-16T22:31:43Z"
+		},
+		{
+			"checksumSHA1": "5adfB3KuxBKYp/GgRv+P9FIsA/k=",
+			"path": "github.com/google/gopacket/pcap",
+			"revision": "26ec6f897fc7b8152729c2f52f91dfa54c791ca1",
+			"revisionTime": "2017-09-16T22:31:43Z"
+		}
+	],
+	"rootPath": "github.com/lflxp/sflowtool"
+}
