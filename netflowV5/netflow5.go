@@ -85,15 +85,17 @@ func (this *NetFlowV5) IntToIPv4Addr(intAddr uint32) net.IP {
 }
 
 //func (this *NetFlowV5) PayLoadToNetFlowV5(data []byte, host string) []NetFlowV5 {
-func (this *NetFlowV5) PayLoadToNetFlowV5(data []byte, host string) {
+func (this *NetFlowV5) PayLoadToNetFlowV5(data []byte, host string) []string {
 	//beego.Critical(data)
 	//datas := []NetFlowV5{}
+
+	result := []string{}
 	header := HeaderV5{}
 	buf := bytes.NewBuffer(data)
 	err := binary.Read(buf, binary.BigEndian, &header)
 	if err != nil {
-		//beego.Error("Error:", err)
-		return
+		beego.Error("Error:", err)
+		return nil
 	}
 	if header.Version == 5 {
 		//NETFLOW5 解析
@@ -103,7 +105,7 @@ func (this *NetFlowV5) PayLoadToNetFlowV5(data []byte, host string) {
 			err = binary.Read(buf, binary.BigEndian, &record)
 			if err != nil {
 				beego.Error(fmt.Printf("binary.Read failed: %v\n", err))
-				return
+				return nil
 			}
 			//ip解析
 			//src := this.IntToIPv4Addr(record.Ipv4SrcAddrInt).String()
@@ -115,17 +117,20 @@ func (this *NetFlowV5) PayLoadToNetFlowV5(data []byte, host string) {
 			netflow := this.DecodeNetFlowV5(&header, &record, host)
 			bufs, err := json.Marshal(netflow)
 			if err != nil {
-				//beego.Error(err)
-				return
+				beego.Error(err)
+				return nil
 			}
-			fmt.Println(string(bufs))
+			//fmt.Println(string(bufs))
+
+			result = append(result,string(bufs))
 
 			//datas = append(datas, netflow)
 			//beego.Informational(fmt.Sprintf("%v\n",string(bufs)))
 		}
 		//return datas
+		return result
 	} else {
 		beego.Error("Netflow version want 5 got %d", header.Version)
-		return
+		return nil
 	}
 }

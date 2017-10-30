@@ -10,6 +10,7 @@ import (
 	"github.com/google/gopacket/layers"
 	. "github.com/lflxp/sflowtool/sflowV5"
 	. "github.com/lflxp/sflowtool/netflowV5"
+	"net"
 )
 
 type Collected struct {
@@ -18,6 +19,17 @@ type Collected struct {
 	SnapShotLenUint uint32
 	Promiscuous     bool //是否开启混杂模式
 	Timeout         time.Duration
+	Udpbool 	bool   //是否开启udp传输
+	Host 		string //udp 发送客户端及端口 127.0.0.1:8888
+}
+
+func (this *Collected) SendUdp(result string) {
+	conn,err := net.Dial("udp",this.Host)
+	defer conn.Close()
+	if err != nil {
+		panic(err)
+	}
+	conn.Write([]byte(result))
 }
 
 func (this *Collected) ListenSFlowSample(protocol, port string) {
@@ -62,7 +74,11 @@ func (this *Collected) ListenSFlowSample(protocol, port string) {
 							if err != nil {
 								fmt.Println(err.Error())
 							}
-							fmt.Println(string(b))
+							if this.Udpbool {
+								this.SendUdp(string(b))
+							} else {
+								fmt.Println(string(b))
+							}
 						}
 					}
 				}
@@ -113,7 +129,12 @@ func (this *Collected) ListenSflowCounter(protocol, port string) {
 						if err != nil {
 							fmt.Println(err.Error())
 						}
-						fmt.Println(string(b))
+
+						if this.Udpbool {
+							this.SendUdp(string(b))
+						} else {
+							fmt.Println(string(b))
+						}
 					}
 				}(got.CounterSamples)
 			}
@@ -121,7 +142,7 @@ func (this *Collected) ListenSflowCounter(protocol, port string) {
 	}
 }
 
-func (this *Collected) ListenSflowAll(protocol,port string) {
+func (this *Collected) ListenSflowAll(protocol, port string) {
 	//Open Device
 	handle, err := pcap.OpenLive(this.DeviceName, this.SnapShotLen, this.Promiscuous, this.Timeout)
 	if err != nil {
@@ -164,7 +185,12 @@ func (this *Collected) ListenSflowAll(protocol,port string) {
 									if err != nil {
 										fmt.Println(err.Error())
 									}
-									fmt.Println(string(b))
+
+									if this.Udpbool {
+										this.SendUdp(string(b))
+									} else {
+										fmt.Println(string(b))
+									}
 								}
 							}
 						}
@@ -182,7 +208,12 @@ func (this *Collected) ListenSflowAll(protocol,port string) {
 						if err != nil {
 							fmt.Println(err.Error())
 						}
-						fmt.Println(string(b))
+
+						if this.Udpbool {
+							this.SendUdp(string(b))
+						} else {
+							fmt.Println(string(b))
+						}
 					}
 				} (got.FlowSamples,got.CounterSamples)
 			}
@@ -190,7 +221,7 @@ func (this *Collected) ListenSflowAll(protocol,port string) {
 	}
 }
 
-func (this *Collected) ListenNetFlowV5(protocol,port string) {
+func (this *Collected) ListenNetFlowV5(protocol, port string) {
 	//Open Device
 	handle, err := pcap.OpenLive(this.DeviceName, this.SnapShotLen, this.Promiscuous, this.Timeout)
 	if err != nil {
@@ -219,7 +250,9 @@ func (this *Collected) ListenNetFlowV5(protocol,port string) {
 
 				tmp := NetFlowV5{}
 
-				tmp.PayLoadToNetFlowV5(udp.Payload, packet.NetworkLayer().NetworkFlow().Src().String())
+				for _,x := range tmp.PayLoadToNetFlowV5(udp.Payload, packet.NetworkLayer().NetworkFlow().Src().String()) {
+					this.SendUdp(x)
+				}
 				//beego.Error(len(data))
 				//fmt.Println(data)
 			}
