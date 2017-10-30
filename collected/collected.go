@@ -59,6 +59,9 @@ func (this *Collected) ListenSFlowSample(protocol, port string) {
 			//fmt.Println("UDP layer detected.")
 			udp, _ := udpLayer.(*layers.UDP)
 			pp := gopacket.NewPacket(udp.Payload, layers.LayerTypeSFlow, gopacket.Default)
+			if pp.ErrorLayer() != nil {
+				fmt.Println("failed :", pp.ErrorLayer().Error(),udp.Payload)
+			}
 			if got, ok := pp.ApplicationLayer().(*layers.SFlowDatagram); ok {
 				go func(datas []layers.SFlowFlowSample){
 					for _, y := range datas {
@@ -110,12 +113,25 @@ func (this *Collected) ListenSflowCounter(protocol, port string) {
 		if p.ErrorLayer() != nil {
 			fmt.Println("failed :", p.ErrorLayer().Error())
 		}
-		udpLayer := p.Layer(layers.LayerTypeUDP)
+
+		//ipLayer := packet.Layer(layers.LayerTypeIPv4)
+		//if ipLayer != nil {
+		//	ip, _ := ipLayer.(*layers.IPv4)
+		//	fmt.Println(ip.SrcIP.String(),ip.DstIP.String())
+		//	//fmt.Println(p.Dump())
+		//}
+
+		udpLayer := packet.Layer(layers.LayerTypeUDP)
 		if udpLayer != nil {
 			//fmt.Println("UDP layer detected.")
 			udp, _ := udpLayer.(*layers.UDP)
+
 			pp := gopacket.NewPacket(udp.Payload, layers.LayerTypeSFlow, gopacket.Default)
+			if pp.ErrorLayer() != nil {
+				fmt.Println("failed :", pp.ErrorLayer().Error(),udp.Payload)
+			}
 			if got, ok := pp.ApplicationLayer().(*layers.SFlowDatagram); ok {
+				beego.Error(udp.Payload)
 				go func(datas []layers.SFlowCounterSample){
 					if len(datas) > 0 {
 						tmp := NewCounterFlow()
@@ -138,6 +154,11 @@ func (this *Collected) ListenSflowCounter(protocol, port string) {
 					}
 				}(got.CounterSamples)
 			}
+		}
+
+		sflow := packet.Layer(layers.LayerTypeSFlow)
+		if sflow != nil {
+			fmt.Println("SFLOW layer detected")
 		}
 	}
 }
@@ -169,7 +190,9 @@ func (this *Collected) ListenSflowAll(protocol, port string) {
 			//fmt.Println("UDP layer detected.")
 			udp, _ := udpLayer.(*layers.UDP)
 			pp := gopacket.NewPacket(udp.Payload, layers.LayerTypeSFlow, gopacket.Default)
-			if got, ok := pp.ApplicationLayer().(*layers.SFlowDatagram); ok {
+			if pp.ErrorLayer() != nil {
+				fmt.Println("failed :", pp.ErrorLayer().Error())
+			} else if got, ok := pp.ApplicationLayer().(*layers.SFlowDatagram); ok {
 				go func(Sample []layers.SFlowFlowSample,Counter []layers.SFlowCounterSample) {
 					if len(Sample) > 0 {
 						for _, y := range Sample {
