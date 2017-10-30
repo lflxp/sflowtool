@@ -208,20 +208,20 @@ func (this *Collected) ListenNetFlowV5(protocol,port string) {
 	beego.Informational(fmt.Sprintf("Only capturing %s port %s packets.", protocol, port))
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for packet := range packetSource.Packets() {
-		beego.Informational("1")
+		//beego.Informational("1")
 		go func(packet gopacket.Packet) {
-			beego.Informational("2")
-			beego.Error("############开始解析#############")
+			//beego.Informational("2")
+			//beego.Error("############开始解析#############")
 			udpLayer := packet.Layer(layers.LayerTypeUDP)
 			if udpLayer != nil {
-				fmt.Println("UDP layer detected.")
+				//fmt.Println("UDP layer detected.")
 				udp, _ := udpLayer.(*layers.UDP)
 
 				tmp := NetFlowV5{}
 
-				data := tmp.PayLoadToNetFlowV5(udp.Payload, packet.NetworkLayer().NetworkFlow().Src().String())
-				beego.Error(len(data))
-				fmt.Println()
+				tmp.PayLoadToNetFlowV5(udp.Payload, packet.NetworkLayer().NetworkFlow().Src().String())
+				//beego.Error(len(data))
+				//fmt.Println(data)
 			}
 		}(packet)
 	}
