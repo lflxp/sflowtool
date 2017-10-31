@@ -78,6 +78,7 @@ import (
 	"net"
 
 	"github.com/google/gopacket"
+	"github.com/astaxie/beego"
 )
 
 // SFlowRecord holds both flow sample records and counter sample records.
@@ -345,6 +346,60 @@ func (s *SFlowDatagram) DecodeFromBytes(data []byte, df gopacket.DecodeFeedback)
 		}
 	}
 	return nil
+}
+
+func (s *SFlowDatagram) DecodeCounterFromBytes(data []byte, df gopacket.DecodeFeedback) error {
+	flga := false
+	var agentAddressType SFlowIPType
+
+	data, s.DatagramVersion = data[4:], binary.BigEndian.Uint32(data[:4])
+	data, agentAddressType = data[4:], SFlowIPType(binary.BigEndian.Uint32(data[:4]))
+	data, s.AgentAddress = data[agentAddressType.Length():], data[:agentAddressType.Length()]
+	data, s.SubAgentID = data[4:], binary.BigEndian.Uint32(data[:4])
+	data, s.SequenceNumber = data[4:], binary.BigEndian.Uint32(data[:4])
+	data, s.AgentUptime = data[4:], binary.BigEndian.Uint32(data[:4])
+	data, s.SampleCount = data[4:], binary.BigEndian.Uint32(data[:4])
+
+	if s.SampleCount < 1 {
+		return fmt.Errorf("SFlow Datagram has invalid sample length: %d", s.SampleCount)
+	}
+	for i := uint32(0); i < s.SampleCount; i++ {
+		sdf := SFlowDataFormat(binary.BigEndian.Uint32(data[:4]))
+		_, sampleType := sdf.decode()
+		switch sampleType {
+		//case SFlowTypeFlowSample:
+		//	if flowSample, err := decodeFlowSample(&data, false); err == nil {
+		//		s.FlowSamples = append(s.FlowSamples, flowSample)
+		//	} else {
+		//		return err
+		//	}
+		case SFlowTypeCounterSample:
+			beego.Error("SFlowTypeCounterSample",SFlowTypeCounterSample)
+			counterSample, _ := decodeCounterSample(&data, false)
+			s.CounterSamples = append(s.CounterSamples, counterSample)
+			flga = true
+
+		//case SFlowTypeExpandedFlowSample:
+		//	if flowSample, err := decodeFlowSample(&data, true); err == nil {
+		//		s.FlowSamples = append(s.FlowSamples, flowSample)
+		//	} else {
+		//		return err
+		//	}
+		case SFlowTypeExpandedCounterSample:
+			beego.Error("SFlowTypeExpandedCounterSample",SFlowTypeExpandedCounterSample)
+			counterSample, _ := decodeCounterSample(&data, true)
+			s.CounterSamples = append(s.CounterSamples, counterSample)
+			flga = true
+
+		default:
+			return errors.New("no counterSample")
+		}
+	}
+	if flga == true {
+		return nil
+	} else {
+		return errors.New("no good")
+	}
 }
 
 // SFlowFlowSample represents a sampled packet and contains
@@ -708,7 +763,13 @@ func (cr SFlowCounterRecordType) String() string {
 }
 
 func decodeCounterSample(data *[]byte, expanded bool) (SFlowCounterSample, error) {
+	fmt.Println("CCCCCCCCCCCCCCCCCCCCCounter detected")
 	s := SFlowCounterSample{}
+	//defer func(){
+	//	if err := recover();err != nil {
+	//		goto BAK
+	//	}
+	//}()
 	var sdc SFlowDataSource
 	var sdce SFlowDataSourceExpanded
 	var sdf SFlowDataFormat
