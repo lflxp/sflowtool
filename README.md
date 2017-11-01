@@ -1,28 +1,28 @@
 # Installation
 Install latest version using Golang (recommended)
 
-> go get -insecure gitlab.qiyi.domain/yunwei/sflowtool
+> go get -insecure github.com/lflxp//sflowtool
 
 # sflowtool
 sflow V5 and Netflow V5 parse by golang
 
 # SflowV5 Struct
 
-![](http://gitlab.qiyi.domain/yunwei/sflowtool/blob/master/SflowV5.png)
+![](https://github.com/lflxp//sflowtool/blob/master/SflowV5.png)
 
 # NetFlowV5 Struct
 
-![](http://gitlab.qiyi.domain/yunwei/sflowtool/blob/master/NetflowV5.png)
+![](https://github.com/lflxp//sflowtool/blob/master/NetflowV5.png)
 
 # Installation
 
-go get [gitlab.qiyi.domain/yunwei/sflowtool](http://gitlab.qiyi.domain/yunwei/sflowtool)
+go get [github.com/lflxp//sflowtool](https://github.com/lflxp//sflowtool)
 
 # Usage
 
 ```
 import (
-	"gitlab.qiyi.domain/yunwei/sflowtool/collected"
+	"github.com/lflxp//sflowtool/collected"
 	"time"
 )
 
