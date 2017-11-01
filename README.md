@@ -8,11 +8,11 @@ sflow V5 and Netflow V5 parse by golang
 
 # SflowV5 Struct
 
-![](https://github.com/lflxp//sflowtool/blob/master/SflowV5.png)
+![](https://github.com/lflxp/sflowtool/blob/master/SflowV5.png)
 
 # NetFlowV5 Struct
 
-![](https://github.com/lflxp//sflowtool/blob/master/NetflowV5.png)
+![](https://github.com/lflxp/sflowtool/blob/master/NetflowV5.png)
 
 # Installation
 
