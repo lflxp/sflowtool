@@ -299,3 +299,72 @@ func (this *SFlowCounterSample) InitCounterSample(p layers.SFlowCounterSample) e
 	}
 	return nil
 }
+
+func (this *SFlowCounterSample) InitCounterSampleStruct(p *layers.SFlowDatagram) error {
+	for _,c := range p.CounterSamples {
+		this.EnterpriseID = c.EnterpriseID.String()
+		this.Format = c.Format.String()
+		this.SampleLength = c.SampleLength
+		this.SequenceNumber = c.SequenceNumber
+		this.SourceIDClass = c.SourceIDClass.String()
+		this.SourceIDIndex = fmt.Sprintf("%v",c.SourceIDIndex)
+		this.RecordCount = c.RecordCount
+		for _,yy := range c.Records {
+			if g1,ok1 := yy.(layers.SFlowGenericInterfaceCounters); ok1 {
+				this.SFlowGenericInterfaceCounters.SFlowBaseCounterRecord.EnterpriseID = g1.EnterpriseID.String()
+				this.SFlowGenericInterfaceCounters.SFlowBaseCounterRecord.Format = g1.Format.String()
+				this.SFlowGenericInterfaceCounters.SFlowBaseCounterRecord.FlowDataLength = g1.FlowDataLength
+				this.SFlowGenericInterfaceCounters.IfIndex = g1.IfIndex
+				this.SFlowGenericInterfaceCounters.IfType = g1.IfType
+				this.SFlowGenericInterfaceCounters.IfSpeed = g1.IfSpeed
+				this.SFlowGenericInterfaceCounters.IfDirection = g1.IfDirection
+				this.SFlowGenericInterfaceCounters.IfStatus = g1.IfStatus
+				this.SFlowGenericInterfaceCounters.IfInOctets = g1.IfInOctets
+				this.SFlowGenericInterfaceCounters.IfInUcastPkts = g1.IfInUcastPkts
+				this.SFlowGenericInterfaceCounters.IfInMulticastPkts = g1.IfInMulticastPkts
+				this.SFlowGenericInterfaceCounters.IfInBroadcastPkts = g1.IfInBroadcastPkts
+				this.SFlowGenericInterfaceCounters.IfInDiscards = g1.IfInDiscards
+				this.SFlowGenericInterfaceCounters.IfInErrors = g1.IfInErrors
+				this.SFlowGenericInterfaceCounters.IfInUnknownProtos = g1.IfInUnknownProtos
+				this.SFlowGenericInterfaceCounters.IfOutOctets = g1.IfOutOctets
+				this.SFlowGenericInterfaceCounters.IfOutUcastPkts = g1.IfOutUcastPkts
+				this.SFlowGenericInterfaceCounters.IfOutMulticastPkts = g1.IfOutMulticastPkts
+				this.SFlowGenericInterfaceCounters.IfOutBroadcastPkts = g1.IfOutBroadcastPkts
+				this.SFlowGenericInterfaceCounters.IfOutDiscards = g1.IfOutDiscards
+				this.SFlowGenericInterfaceCounters.IfOutErrors = g1.IfOutErrors
+				this.SFlowGenericInterfaceCounters.IfPromiscuousMode = g1.IfPromiscuousMode
+			} else if g2,ok2 := yy.(layers.SFlowEthernetCounters); ok2 {
+				this.SFlowEthernetCounters.SFlowBaseCounterRecord.EnterpriseID = g2.EnterpriseID.String()
+				this.SFlowEthernetCounters.SFlowBaseCounterRecord.Format = g2.Format.String()
+				this.SFlowEthernetCounters.SFlowBaseCounterRecord.FlowDataLength = g2.FlowDataLength
+				this.SFlowEthernetCounters.AlignmentErrors = g2.AlignmentErrors
+				this.SFlowEthernetCounters.FCSErrors = g2.FCSErrors
+				this.SFlowEthernetCounters.SingleCollisionFrames = g2.SingleCollisionFrames
+				this.SFlowEthernetCounters.MultipleCollisionFrames = g2.MultipleCollisionFrames
+				this.SFlowEthernetCounters.SQETestErrors = g2.SQETestErrors
+				this.SFlowEthernetCounters.DeferredTransmissions = g2.DeferredTransmissions
+				this.SFlowEthernetCounters.LateCollisions = g2.LateCollisions
+				this.SFlowEthernetCounters.ExcessiveCollisions = g2.ExcessiveCollisions
+				this.SFlowEthernetCounters.InternalMacTransmitErrors = g2.InternalMacTransmitErrors
+				this.SFlowEthernetCounters.CarrierSenseErrors = g2.CarrierSenseErrors
+				this.SFlowEthernetCounters.FrameTooLongs = g2.FrameTooLongs
+				this.SFlowEthernetCounters.InternalMacReceiveErrors = g2.InternalMacReceiveErrors
+				this.SFlowEthernetCounters.SymbolErrors = g2.SymbolErrors
+			} else if g3,ok3 := yy.(layers.SFlowProcessorCounters); ok3 {
+				this.SFlowProcessorCounters.SFlowBaseCounterRecord.EnterpriseID = g3.EnterpriseID.String()
+				this.SFlowProcessorCounters.SFlowBaseCounterRecord.Format = g3.Format.String()
+				this.SFlowProcessorCounters.SFlowBaseCounterRecord.FlowDataLength = g3.FlowDataLength
+				this.SFlowProcessorCounters.FiveSecCpu = g3.FiveSecCpu
+				this.SFlowProcessorCounters.OneMinCpu = g3.OneMinCpu
+				this.SFlowProcessorCounters.FiveMinCpu = g3.FiveMinCpu
+				this.SFlowProcessorCounters.TotalMemory = g3.TotalMemory
+				this.SFlowProcessorCounters.FreeMemory = g3.FreeMemory
+			} else {
+				return errors.New("nothing deteced")
+			}
+		}
+	}
+
+
+	return nil
+}
