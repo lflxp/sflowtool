@@ -351,7 +351,7 @@ func (s *SFlowDatagram) DecodeFromBytes(data []byte, df gopacket.DecodeFeedback)
 func (s *SFlowDatagram) DecodeSampleFromBytes(data []byte, df gopacket.DecodeFeedback) error {
 	defer func() {
 		if err := recover();err != nil {
-			fmt.Println("Damge Error!!!!!!!!!!!!!",err,data)
+			//fmt.Println("Damge Error!!!!!!!!!!!!!",err,data)
 		}
 	}()
 	var agentAddressType SFlowIPType
@@ -391,7 +391,6 @@ func (s *SFlowDatagram) DecodeSampleFromBytes(data []byte, df gopacket.DecodeFee
 		//	}
 
 		default:
-			fmt.Println("DataGramVersion",s.DatagramVersion)
 			return fmt.Errorf("Unsupported SFlow sample type %d %d", sampleType,s.DatagramVersion)
 		}
 	}

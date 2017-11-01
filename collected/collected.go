@@ -21,17 +21,27 @@ type Collected struct {
 	SnapShotLenUint uint32
 	Promiscuous     bool //是否开启混杂模式
 	Timeout         time.Duration
-	Udpbool         bool   //是否开启udp传输
+	Udpbool         bool   //是否开启udp sample and netflow传输
 	Host            string //udp 发送客户端及端口 127.0.0.1:8888
+	CounterHost 	string //udp counter 传输
 }
 
-func (this *Collected) SendUdp(result string) {
-	conn, err := net.Dial("udp", this.Host)
-	defer conn.Close()
-	if err != nil {
-		panic(err)
+func (this *Collected) SendUdp(result string,counter bool) {
+	if counter {
+		conn, err := net.Dial("udp", this.CounterHost)
+		defer conn.Close()
+		if err != nil {
+			panic(err)
+		}
+		conn.Write([]byte(result))
+	} else {
+		conn, err := net.Dial("udp", this.Host)
+		defer conn.Close()
+		if err != nil {
+			panic(err)
+		}
+		conn.Write([]byte(result))
 	}
-	conn.Write([]byte(result))
 }
 
 func (this *Collected) CheckInfo(ppp []byte) {
@@ -184,7 +194,7 @@ func (this *Collected) ListenSFlowSample(protocol, port string) {
 									fmt.Println(err.Error())
 								}
 								if this.Udpbool {
-									this.SendUdp(string(b))
+									this.SendUdp(string(b),false)
 								} else {
 									fmt.Println(string(b))
 								}
@@ -208,7 +218,7 @@ func (this *Collected) ListenSFlowSample(protocol, port string) {
 									fmt.Println(err.Error())
 								}
 								if this.Udpbool {
-									this.SendUdp(string(b))
+									this.SendUdp(string(b),false)
 								} else {
 									fmt.Println(string(b))
 								}
@@ -267,7 +277,7 @@ func (this *Collected) ListenSflowCounter(protocol, port string) {
 							fmt.Println(err.Error())
 						}
 						if this.Udpbool {
-							this.SendUdp(string(b))
+							this.SendUdp(string(b),true)
 						} else {
 							fmt.Println(string(b))
 						}
@@ -293,7 +303,7 @@ func (this *Collected) ListenSflowCounter(protocol, port string) {
 						}
 
 						if this.Udpbool {
-							this.SendUdp(string(b))
+							this.SendUdp(string(b),true)
 						} else {
 							fmt.Println(string(b))
 						}
@@ -337,7 +347,7 @@ func (this *Collected) ListenSflowAll(protocol, port string) {
 			udp, _ := udpLayer.(*layers.UDP)
 			pp := gopacket.NewPacket(udp.Payload, layers.LayerTypeSFlow, gopacket.Default)
 			if pp.ErrorLayer() != nil {
-				fmt.Println("failed :", pp.ErrorLayer().Error())
+				//fmt.Println("failed :", pp.ErrorLayer().Error())
 				go func(data []byte){
 					s := &layers.SFlowDatagram{}
 					s.DecodeSampleFromBytes(data,gopacket.NilDecodeFeedback)
@@ -353,7 +363,7 @@ func (this *Collected) ListenSflowAll(protocol, port string) {
 									fmt.Println(err.Error())
 								}
 								if this.Udpbool {
-									this.SendUdp(string(b))
+									this.SendUdp(string(b),false)
 								} else {
 									fmt.Println(string(b))
 								}
@@ -374,7 +384,7 @@ func (this *Collected) ListenSflowAll(protocol, port string) {
 							fmt.Println(err.Error())
 						}
 						if this.Udpbool {
-							this.SendUdp(string(b))
+							this.SendUdp(string(b),true)
 						} else {
 							fmt.Println(string(b))
 						}
@@ -398,7 +408,7 @@ func (this *Collected) ListenSflowAll(protocol, port string) {
 									}
 
 									if this.Udpbool {
-										this.SendUdp(string(b))
+										this.SendUdp(string(b),false)
 									} else {
 										fmt.Println(string(b))
 									}
@@ -421,7 +431,7 @@ func (this *Collected) ListenSflowAll(protocol, port string) {
 						}
 
 						if this.Udpbool {
-							this.SendUdp(string(b))
+							this.SendUdp(string(b),true)
 						} else {
 							fmt.Println(string(b))
 						}
@@ -462,7 +472,7 @@ func (this *Collected) ListenNetFlowV5(protocol, port string) {
 				tmp := NetFlowV5{}
 
 				for _, x := range tmp.PayLoadToNetFlowV5(udp.Payload, packet.NetworkLayer().NetworkFlow().Src().String()) {
-					this.SendUdp(x)
+					this.SendUdp(x,false)
 				}
 				//beego.Error(len(data))
 				//fmt.Println(data)
