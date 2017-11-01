@@ -20,43 +20,27 @@ go get [github.com/lflxp//sflowtool](https://github.com/lflxp//sflowtool)
 
 # Usage
 
+
 ```
-import (
-	"github.com/lflxp//sflowtool/collected"
-	"time"
-)
-
-var Con collected.Collected = collected.Collected{
-	DeviceName:  "en0",
-	SnapShotLen: 1024,
-	Promiscuous: false,
-	Timeout:     30 * time.Second,
-}
-
-func main() {
-	SflowAll()
-	//SflowSample()
-	//SflowCounter()
-	//NetflowV5()
-	time.Sleep(60*time.Second)
-}
-
-func SflowCounter() {
-	Con.ListenSflowCounter("udp","9999")
-}
-
-func SflowSample() {
-	Con.ListenSFlowSample("udp","9999")
-}
-
-//include SFlowSample and SflowCounter
-func SflowAll() {
-	Con.ListenSflowAll("udp","9999")
-}
-
-func NetflowV5() {
-	Con.ListenNetFlowV5("udp","6343")
-}
+Usage of ./sflowtool:
+  -chost string
+    	udp CounterSample 传输主机:端口 (default "127.0.0.1:7777")
+  -e string
+    	网卡名 (default "en0")
+  -graceful
+    	listen on open fd (after forking)
+  -host string
+    	udp SFlowSample And Netflow 传输主机:端口 (default "127.0.0.1:6666")
+  -p string
+    	端口 (default "6343")
+  -s string
+    	协议 (default "udp")
+  -socketorder string
+    	previous initialization order - used when more than one listener was started
+  -t string
+    	类型:all(sflowSample|Counter),counter(SflowCounter),sample(SflowSample),netflow (default "all")
+  -udp
+    	是否开启udp数据传输,默认不开启
 
 ```
 
