@@ -11,8 +11,8 @@ import (
 	. "github.com/lflxp/sflowtool/sflowV5"
 	//"github.com/Cistern/sflow"
 	"net"
-	"time"
 	"strings"
+	"time"
 )
 
 type Collected struct {
@@ -23,10 +23,10 @@ type Collected struct {
 	Timeout         time.Duration
 	Udpbool         bool   //是否开启udp sample and netflow传输
 	Host            string //udp 发送客户端及端口 127.0.0.1:8888
-	CounterHost 	string //udp counter 传输
+	CounterHost     string //udp counter 传输
 }
 
-func (this *Collected) SendUdp(result string,counter bool) {
+func (this *Collected) SendUdp(result string, counter bool) {
 	if counter {
 		conn, err := net.Dial("udp", this.CounterHost)
 		defer conn.Close()
@@ -143,7 +143,7 @@ func (this *Collected) CheckInfo(ppp []byte) {
 		fmt.Println("Error decoding some part of the packet:", err)
 	}
 
-	for _,x := range p.Layers() {
+	for _, x := range p.Layers() {
 		fmt.Println(x.LayerType().String())
 	}
 
@@ -170,62 +170,75 @@ func (this *Collected) ListenSFlowSample(protocol, port string) {
 	for packet := range packetSource.Packets() {
 		p := gopacket.NewPacket(packet.Data(), layers.LayerTypeEthernet, gopacket.Default)
 		if p.ErrorLayer() != nil {
-			fmt.Println("failed :", p.ErrorLayer().Error())
+			fmt.Println("failed LayerTypeEthernet:", p.ErrorLayer().Error())
 		}
 		udpLayer := p.Layer(layers.LayerTypeUDP)
 		if udpLayer != nil {
 			//fmt.Println("UDP layer detected.")
 			udp, _ := udpLayer.(*layers.UDP)
 			pp := gopacket.NewPacket(udp.Payload, layers.LayerTypeSFlow, gopacket.Default)
-			if pp.ErrorLayer() != nil {
-				//fmt.Println("failed :", pp.ErrorLayer().Error())
-				go func(data []byte){
-					s := &layers.SFlowDatagram{}
-					s.DecodeSampleFromBytes(data,gopacket.NilDecodeFeedback)
-					for _, y := range s.FlowSamples {
-						tmp := NewFlowSamples()
-						tmp.InitOriginData(p)
-						tmp.InitFlowSampleData(y)
-						for _,yy := range y.Records {
-							if g1, ok1 := yy.(layers.SFlowRawPacketFlowRecord); ok1 {
-								tmp.ParseLayers(g1.Header)
-								b, err := json.Marshal(tmp)
-								if err != nil {
-									fmt.Println(err.Error())
-								}
-								if this.Udpbool {
-									this.SendUdp(string(b),false)
-								} else {
-									fmt.Println(string(b))
-								}
-							}
-						}
-					}
-				}(udp.Payload)
-			}
+			//if pp.ErrorLayer() != nil {
+			//	//fmt.Println("failed LayerTypeSFlow:", pp.ErrorLayer().Error())
+			//	go func(data []byte) {
+			//		s := &layers.SFlowDatagram{}
+			//		s.DecodeSampleFromBytes(data, gopacket.NilDecodeFeedback)
+			//
+			//		//b, err := json.Marshal(s)
+			//		//if err != nil {
+			//		//	fmt.Println(err.Error())
+			//		//}
+			//		//fmt.Println(data,string(b))
+			//		for n, y := range s.FlowSamples {
+			//			tmp := NewFlowSamples()
+			//			tmp.InitOriginData(p)
+			//			tmp.InitFlowSampleData(y)
+			//			for num, yy := range y.Records {
+			//				if g1, ok1 := yy.(layers.SFlowRawPacketFlowRecord); ok1 {
+			//					tmp.ParseLayers(g1.Header)
+			//					fmt.Println(data,s.AgentUptime,n,num,tmp.Data.Datagram.SrcIP,g1.Header.NetworkLayer().NetworkFlow().Src().String(),g1.Header.NetworkLayer().NetworkFlow().Dst().String(), tmp.SFlowRawPacketFlowRecord.Header.Bytes)
+			//					//b, err := json.Marshal(tmp)
+			//					//if err != nil {
+			//					//	fmt.Println(err.Error())
+			//					//}
+			//					//if this.Udpbool {
+			//					//	this.SendUdp(string(b),false)
+			//					//} else {
+			//					//	fmt.Println(s.AgentUptime,n,num,string(b))
+			//					//}
+			//				}
+			//			}
+			//		}
+			//	}(udp.Payload)
+			//}
 			if got, ok := pp.ApplicationLayer().(*layers.SFlowDatagram); ok {
-				go func(datas []layers.SFlowFlowSample) {
-					for _, y := range datas {
+				//b, err := json.Marshal(got)
+				//if err != nil {
+				//	fmt.Println(err.Error())
+				//}
+				//fmt.Println(string(b))
+				go func(datas []layers.SFlowFlowSample,got *layers.SFlowDatagram) {
+					for n, y := range datas {
 						//beego.Critical(len(y.Records),y.RecordCount)
 						tmp := NewFlowSamples()
 						tmp.InitOriginData(p)
 						tmp.InitFlowSampleData(y)
-						for _, yy := range y.Records {
+						for num, yy := range y.Records {
 							if g1, ok1 := yy.(layers.SFlowRawPacketFlowRecord); ok1 {
 								tmp.ParseLayers(g1.Header)
-								b, err := json.Marshal(tmp)
-								if err != nil {
-									fmt.Println(err.Error())
-								}
-								if this.Udpbool {
-									this.SendUdp(string(b),false)
-								} else {
-									fmt.Println(string(b))
-								}
+								fmt.Println(got.AgentUptime,n,num,tmp.Data.Datagram.SrcIP, tmp.SFlowRawPacketFlowRecord.Header.Bytes)
+								//b, err := json.Marshal(tmp)
+								//if err != nil {
+								//	fmt.Println(err.Error())
+								//}
+								//if this.Udpbool {
+								//	this.SendUdp(string(b),false)
+								//} else {
+								//	fmt.Println(string(b))
+								//}
 							}
 						}
 					}
-				}(got.FlowSamples)
+				}(got.FlowSamples,got)
 			}
 		}
 	}
@@ -263,9 +276,9 @@ func (this *Collected) ListenSflowCounter(protocol, port string) {
 			pp := gopacket.NewPacket(udp.Payload, layers.LayerTypeSFlow, gopacket.Default)
 			if pp.ErrorLayer() != nil {
 
-				go func(data []byte){
+				go func(data []byte) {
 					s := &layers.SFlowDatagram{}
-					s.DecodeCounterFromBytes(data,gopacket.NilDecodeFeedback)
+					s.DecodeCounterFromBytes(data, gopacket.NilDecodeFeedback)
 					if len(s.CounterSamples) != 0 {
 						//beego.Error("Error out of bounds ")
 						tmp := NewCounterFlow()
@@ -277,12 +290,11 @@ func (this *Collected) ListenSflowCounter(protocol, port string) {
 							fmt.Println(err.Error())
 						}
 						if this.Udpbool {
-							this.SendUdp(string(b),true)
+							this.SendUdp(string(b), true)
 						} else {
 							fmt.Println(string(b))
 						}
 					}
-
 
 				}(udp.Payload)
 			}
@@ -303,7 +315,7 @@ func (this *Collected) ListenSflowCounter(protocol, port string) {
 						}
 
 						if this.Udpbool {
-							this.SendUdp(string(b),true)
+							this.SendUdp(string(b), true)
 						} else {
 							fmt.Println(string(b))
 						}
@@ -348,14 +360,14 @@ func (this *Collected) ListenSflowAll(protocol, port string) {
 			pp := gopacket.NewPacket(udp.Payload, layers.LayerTypeSFlow, gopacket.Default)
 			if pp.ErrorLayer() != nil {
 				//fmt.Println("failed :", pp.ErrorLayer().Error())
-				go func(data []byte){
+				go func(data []byte) {
 					s := &layers.SFlowDatagram{}
-					s.DecodeSampleFromBytes(data,gopacket.NilDecodeFeedback)
+					s.DecodeSampleFromBytes(data, gopacket.NilDecodeFeedback)
 					for _, y := range s.FlowSamples {
 						tmp := NewFlowSamples()
 						tmp.InitOriginData(p)
 						tmp.InitFlowSampleData(y)
-						for _,yy := range y.Records {
+						for _, yy := range y.Records {
 							if g1, ok1 := yy.(layers.SFlowRawPacketFlowRecord); ok1 {
 								tmp.ParseLayers(g1.Header)
 								b, err := json.Marshal(tmp)
@@ -363,7 +375,7 @@ func (this *Collected) ListenSflowAll(protocol, port string) {
 									fmt.Println(err.Error())
 								}
 								if this.Udpbool {
-									this.SendUdp(string(b),false)
+									this.SendUdp(string(b), false)
 								} else {
 									fmt.Println(string(b))
 								}
@@ -372,7 +384,7 @@ func (this *Collected) ListenSflowAll(protocol, port string) {
 					}
 
 					sc := &layers.SFlowDatagram{}
-					sc.DecodeCounterFromBytes(data,gopacket.NilDecodeFeedback)
+					sc.DecodeCounterFromBytes(data, gopacket.NilDecodeFeedback)
 					if len(s.CounterSamples) != 0 {
 						//beego.Error("Error out of bounds ")
 						tmp := NewCounterFlow()
@@ -384,7 +396,7 @@ func (this *Collected) ListenSflowAll(protocol, port string) {
 							fmt.Println(err.Error())
 						}
 						if this.Udpbool {
-							this.SendUdp(string(b),true)
+							this.SendUdp(string(b), true)
 						} else {
 							fmt.Println(string(b))
 						}
@@ -408,7 +420,7 @@ func (this *Collected) ListenSflowAll(protocol, port string) {
 									}
 
 									if this.Udpbool {
-										this.SendUdp(string(b),false)
+										this.SendUdp(string(b), false)
 									} else {
 										fmt.Println(string(b))
 									}
@@ -431,7 +443,7 @@ func (this *Collected) ListenSflowAll(protocol, port string) {
 						}
 
 						if this.Udpbool {
-							this.SendUdp(string(b),true)
+							this.SendUdp(string(b), true)
 						} else {
 							fmt.Println(string(b))
 						}
@@ -472,7 +484,7 @@ func (this *Collected) ListenNetFlowV5(protocol, port string) {
 				tmp := NetFlowV5{}
 
 				for _, x := range tmp.PayLoadToNetFlowV5(udp.Payload, packet.NetworkLayer().NetworkFlow().Src().String()) {
-					this.SendUdp(x,false)
+					this.SendUdp(x, false)
 				}
 				//beego.Error(len(data))
 				//fmt.Println(data)
