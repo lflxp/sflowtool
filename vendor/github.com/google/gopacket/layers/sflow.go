@@ -347,22 +347,29 @@ func (s *SFlowDatagram) DecodeFromBytes(data []byte, df gopacket.DecodeFeedback)
 	return nil
 }
 
-
 func (s *SFlowDatagram) DecodeSampleFromBytes(data []byte, df gopacket.DecodeFeedback) error {
-	defer func() {
-		if err := recover();err != nil {
-			//fmt.Println("Damge Error!!!!!!!!!!!!!",err,data)
-		}
-	}()
+	////fmt.Println("================1================DecodeSampleFromBytes",data)
+	//defer func() {
+	//	if err := recover();err != nil {
+	//		////fmt.Println("Damge Error!!!!!!!!!!!!!",err,data)
+	//	}
+	//}()
 	var agentAddressType SFlowIPType
 
 	data, s.DatagramVersion = data[4:], binary.BigEndian.Uint32(data[:4])
+	//fmt.Println("DatagramVersion",s.DatagramVersion)
 	data, agentAddressType = data[4:], SFlowIPType(binary.BigEndian.Uint32(data[:4]))
+	//fmt.Println("agentAddressType",agentAddressType,agentAddressType.Length())
 	data, s.AgentAddress = data[agentAddressType.Length():], data[:agentAddressType.Length()]
+	//fmt.Println("AgentAddress",s.AgentAddress)
 	data, s.SubAgentID = data[4:], binary.BigEndian.Uint32(data[:4])
+	//fmt.Println("SubAgentID",s.SubAgentID)
 	data, s.SequenceNumber = data[4:], binary.BigEndian.Uint32(data[:4])
+	//fmt.Println("SequenceNumber",s.SequenceNumber)
 	data, s.AgentUptime = data[4:], binary.BigEndian.Uint32(data[:4])
+	//fmt.Println("AgentUptime",s.AgentUptime)
 	data, s.SampleCount = data[4:], binary.BigEndian.Uint32(data[:4])
+	//fmt.Println("SampleCount",s.SampleCount)
 
 	if s.SampleCount < 1 {
 		return fmt.Errorf("SFlow Datagram has invalid sample length: %d", s.SampleCount)
@@ -370,10 +377,11 @@ func (s *SFlowDatagram) DecodeSampleFromBytes(data []byte, df gopacket.DecodeFee
 	for i := uint32(0); i < s.SampleCount; i++ {
 		sdf := SFlowDataFormat(binary.BigEndian.Uint32(data[:4]))
 		_, sampleType := sdf.decode()
+		//fmt.Println("sampleType",sampleType)
 		switch sampleType {
 		case SFlowTypeFlowSample:
 			//s.DecodeFlowSample(&data, false)
-			flowSample,_ := decodeFlowSample(&data, false)
+			flowSample, _ := decodeFlowSample(&data, false)
 			s.FlowSamples = append(s.FlowSamples, flowSample)
 		//case SFlowTypeCounterSample:
 		//	if counterSample, err := decodeCounterSample(&data, false); err == nil {
@@ -383,7 +391,7 @@ func (s *SFlowDatagram) DecodeSampleFromBytes(data []byte, df gopacket.DecodeFee
 		//	}
 		case SFlowTypeExpandedFlowSample:
 			//s.DecodeFlowSample(&data, true)
-			flowSample,_ := decodeFlowSample(&data, true)
+			flowSample, _ := decodeFlowSample(&data, true)
 			s.FlowSamples = append(s.FlowSamples, flowSample)
 		//case SFlowTypeExpandedCounterSample:
 		//	if counterSample, err := decodeCounterSample(&data, true); err == nil {
@@ -393,7 +401,7 @@ func (s *SFlowDatagram) DecodeSampleFromBytes(data []byte, df gopacket.DecodeFee
 		//	}
 
 		default:
-			return fmt.Errorf("Unsupported SFlow sample type %d %d", sampleType,s.DatagramVersion)
+			return fmt.Errorf("Unsupported SFlow sample type %d %d", sampleType, s.DatagramVersion)
 		}
 	}
 	return nil
@@ -558,40 +566,58 @@ func skipRecord(data *[]byte) {
 }
 
 func decodeFlowSample(data *[]byte, expanded bool) (SFlowFlowSample, error) {
+	//fmt.Println("decodeFlowSample",data)
 	s := SFlowFlowSample{}
 	var sdf SFlowDataFormat
 	*data, sdf = (*data)[4:], SFlowDataFormat(binary.BigEndian.Uint32((*data)[:4]))
 	var sdc SFlowDataSource
 
 	s.EnterpriseID, s.Format = sdf.decode()
+	//fmt.Println("decodeFlowSample Format",data,s.Format)
 	*data, s.SampleLength = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeFlowSample SampleLength",data,s.SampleLength)
 	*data, s.SequenceNumber = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeFlowSample SequenceNumber",data,s.SequenceNumber)
 	if expanded {
 		*data, s.SourceIDClass = (*data)[4:], SFlowSourceFormat(binary.BigEndian.Uint32((*data)[:4]))
+		//fmt.Println("decodeFlowSample SourceIDClass",data,s.SourceIDClass)
 		*data, s.SourceIDIndex = (*data)[4:], SFlowSourceValue(binary.BigEndian.Uint32((*data)[:4]))
+		//fmt.Println("decodeFlowSample SourceIDIndex",data,s.SourceIDIndex)
 	} else {
 		*data, sdc = (*data)[4:], SFlowDataSource(binary.BigEndian.Uint32((*data)[:4]))
 		s.SourceIDClass, s.SourceIDIndex = sdc.decode()
+		//fmt.Println("decodeFlowSample s.SourceIDClass, s.SourceIDIndex",data,s.SourceIDClass,s.SourceIDIndex)
 	}
 	*data, s.SamplingRate = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeFlowSample SamplingRate",data,s.SamplingRate)
 	*data, s.SamplePool = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeFlowSample SamplePool",data,s.SamplePool)
 	*data, s.Dropped = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeFlowSample Dropped",data,s.Dropped)
 
 	if expanded {
 		*data, s.InputInterfaceFormat = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+		//fmt.Println("decodeFlowSample InputInterfaceFormat",data,s.InputInterfaceFormat)
 		*data, s.InputInterface = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+		//fmt.Println("decodeFlowSample InputInterface",data,s.InputInterface)
 		*data, s.OutputInterfaceFormat = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+		//fmt.Println("decodeFlowSample OutputInterfaceFormat",data,s.OutputInterfaceFormat)
 		*data, s.OutputInterface = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+		//fmt.Println("decodeFlowSample OutputInterface",data,s.OutputInterface)
 	} else {
 		*data, s.InputInterface = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+		//fmt.Println("decodeFlowSample InputInterface",data,s.InputInterface)
 		*data, s.OutputInterface = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+		//fmt.Println("decodeFlowSample OutputInterface",data,s.OutputInterface)
 	}
 	*data, s.RecordCount = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeFlowSample RecordCount",data,s.RecordCount)
 
 	for i := uint32(0); i < s.RecordCount; i++ {
 		rdf := SFlowFlowDataFormat(binary.BigEndian.Uint32((*data)[:4]))
 		_, flowRecordType := rdf.decode()
 
+		//fmt.Println("decodeFlowSample flowRecordType",data,flowRecordType)
 		switch flowRecordType {
 		case SFlowTypeRawPacketFlow:
 			if record, err := decodeRawPacketFlowRecord(data); err == nil {
@@ -770,130 +796,130 @@ func (this *SFlowDatagram) DecodeFlowSample(data *[]byte, expanded bool) {
 			if record, err := decodeExtendedUserFlow(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeExtendedUrlFlow:
 			if record, err := decodeExtendedURLRecord(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeExtendedSwitchFlow:
 			if record, err := decodeExtendedSwitchFlowRecord(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeExtendedRouterFlow:
 			if record, err := decodeExtendedRouterFlowRecord(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeExtendedGatewayFlow:
 			if record, err := decodeExtendedGatewayFlowRecord(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeEthernetFrameFlow:
 			// TODO
 			skipRecord(data)
-			this.FlowSamples = append(this.FlowSamples,*s)
+			this.FlowSamples = append(this.FlowSamples, *s)
 		case SFlowTypeIpv4Flow:
 			if record, err := decodeSFlowIpv4Record(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeIpv6Flow:
 			if record, err := decodeSFlowIpv6Record(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeExtendedMlpsFlow:
 			// TODO
 			skipRecord(data)
-			this.FlowSamples = append(this.FlowSamples,*s)
+			this.FlowSamples = append(this.FlowSamples, *s)
 		case SFlowTypeExtendedNatFlow:
 			// TODO
 			skipRecord(data)
-			this.FlowSamples = append(this.FlowSamples,*s)
+			this.FlowSamples = append(this.FlowSamples, *s)
 		case SFlowTypeExtendedMlpsTunnelFlow:
 			// TODO
 			skipRecord(data)
-			this.FlowSamples = append(this.FlowSamples,*s)
+			this.FlowSamples = append(this.FlowSamples, *s)
 		case SFlowTypeExtendedMlpsVcFlow:
 			// TODO
 			skipRecord(data)
-			this.FlowSamples = append(this.FlowSamples,*s)
+			this.FlowSamples = append(this.FlowSamples, *s)
 		case SFlowTypeExtendedMlpsFecFlow:
 			// TODO
 			skipRecord(data)
-			this.FlowSamples = append(this.FlowSamples,*s)
+			this.FlowSamples = append(this.FlowSamples, *s)
 		case SFlowTypeExtendedMlpsLvpFecFlow:
 			// TODO
 			skipRecord(data)
-			this.FlowSamples = append(this.FlowSamples,*s)
+			this.FlowSamples = append(this.FlowSamples, *s)
 		case SFlowTypeExtendedVlanFlow:
 			// TODO
 			skipRecord(data)
-			this.FlowSamples = append(this.FlowSamples,*s)
+			this.FlowSamples = append(this.FlowSamples, *s)
 		case SFlowTypeExtendedIpv4TunnelEgressFlow:
 			if record, err := decodeExtendedIpv4TunnelEgress(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeExtendedIpv4TunnelIngressFlow:
 			if record, err := decodeExtendedIpv4TunnelIngress(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeExtendedIpv6TunnelEgressFlow:
 			if record, err := decodeExtendedIpv6TunnelEgress(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeExtendedIpv6TunnelIngressFlow:
 			if record, err := decodeExtendedIpv6TunnelIngress(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeExtendedDecapsulateEgressFlow:
 			if record, err := decodeExtendedDecapsulateEgress(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeExtendedDecapsulateIngressFlow:
 			if record, err := decodeExtendedDecapsulateIngress(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeExtendedVniEgressFlow:
 			if record, err := decodeExtendedVniEgress(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		case SFlowTypeExtendedVniIngressFlow:
 			if record, err := decodeExtendedVniIngress(data); err == nil {
 				s.Records = append(s.Records, record)
 			} else {
-				this.FlowSamples = append(this.FlowSamples,*s)
+				this.FlowSamples = append(this.FlowSamples, *s)
 			}
 		default:
-			this.FlowSamples = append(this.FlowSamples,*s)
+			this.FlowSamples = append(this.FlowSamples, *s)
 		}
 	}
 	//return s, nil
-	this.FlowSamples = append(this.FlowSamples,*s)
+	this.FlowSamples = append(this.FlowSamples, *s)
 }
 
 // Counter samples report information about various counter
@@ -1232,24 +1258,33 @@ func decodeRawPacketFlowRecord(data *[]byte) (SFlowRawPacketFlowRecord, error) {
 	header := []byte{}
 	var fdf SFlowFlowDataFormat
 
+	//fmt.Println("=============start================decodeRawPacketFlowRecord",data)
 	*data, fdf = (*data)[4:], SFlowFlowDataFormat(binary.BigEndian.Uint32((*data)[:4]))
 	rec.EnterpriseID, rec.Format = fdf.decode()
+	//fmt.Println("decodeRawPacketFlowRecord rec.EnterpriseID, rec.Format",data,rec.EnterpriseID, rec.Format)
 	*data, rec.FlowDataLength = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeRawPacketFlowRecord, rec.FlowDataLength",data,rec.FlowDataLength)
 	*data, rec.HeaderProtocol = (*data)[4:], SFlowRawHeaderProtocol(binary.BigEndian.Uint32((*data)[:4]))
+	//fmt.Println("decodeRawPacketFlowRecord rec.HeaderProtocol",data,rec.HeaderProtocol)
 	*data, rec.FrameLength = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeRawPacketFlowRecord rec.FrameLength",data,rec.FrameLength)
 	*data, rec.PayloadRemoved = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeRawPacketFlowRecord rec.PayloadRemoved",data,rec.PayloadRemoved)
 	*data, rec.HeaderLength = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeRawPacketFlowRecord rec.HeaderLength",data,rec.HeaderLength)
 	headerLenWithPadding := int(rec.HeaderLength + ((4 - rec.HeaderLength) % 4))
+	//fmt.Println("decodeRawPacketFlowRecord headerLenWithPadding",data,headerLenWithPadding,len(*data))
 	*data, header = (*data)[headerLenWithPadding:], (*data)[:headerLenWithPadding]
+	//fmt.Println("decodeRawPacketFlowRecord header",header,len(header))
 	rec.Header = gopacket.NewPacket(header, LayerTypeEthernet, gopacket.Default)
 	return rec, nil
 }
 
 func (this *SFlowFlowSample) DecodeRawPacketFlowRecord(data *[]byte) {
 	rec := SFlowRawPacketFlowRecord{}
-	defer func(){
+	defer func() {
 		if err := recover(); err != nil {
-			this.Records = append(this.Records,rec)
+			this.Records = append(this.Records, rec)
 		}
 	}()
 	header := []byte{}
@@ -1269,7 +1304,7 @@ func (this *SFlowFlowSample) DecodeRawPacketFlowRecord(data *[]byte) {
 		*data, header = (*data)[headerLenWithPadding:], (*data)[:headerLenWithPadding]
 	}
 	rec.Header = gopacket.NewPacket(header, LayerTypeEthernet, gopacket.Default)
-	this.Records = append(this.Records,rec)
+	this.Records = append(this.Records, rec)
 }
 
 // SFlowExtendedSwitchFlowRecord give additional information
@@ -1302,16 +1337,23 @@ type SFlowExtendedSwitchFlowRecord struct {
 //  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
 func decodeExtendedSwitchFlowRecord(data *[]byte) (SFlowExtendedSwitchFlowRecord, error) {
+	//fmt.Println("decodeExtendedSwitchFlowRecord",data)
 	es := SFlowExtendedSwitchFlowRecord{}
 	var fdf SFlowFlowDataFormat
 
 	*data, fdf = (*data)[4:], SFlowFlowDataFormat(binary.BigEndian.Uint32((*data)[:4]))
 	es.EnterpriseID, es.Format = fdf.decode()
+	//fmt.Println("decodeExtendedSwitchFlowRecord es.EnterpriseID, es.Format",data,es.EnterpriseID, es.Format)
 	*data, es.FlowDataLength = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeExtendedSwitchFlowRecord es.FlowDataLength",data,es.FlowDataLength)
 	*data, es.IncomingVLAN = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeExtendedSwitchFlowRecord es.IncomingVLAN ",data,es.IncomingVLAN )
 	*data, es.IncomingVLANPriority = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeExtendedSwitchFlowRecord es.IncomingVLANPriority ",data,es.IncomingVLANPriority )
 	*data, es.OutgoingVLAN = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeExtendedSwitchFlowRecord, es.OutgoingVLAN",data, es.OutgoingVLAN)
 	*data, es.OutgoingVLANPriority = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeExtendedSwitchFlowRecord, es.OutgoingVLANPriority",data, es.OutgoingVLANPriority)
 	return es, nil
 }
 
@@ -1348,13 +1390,20 @@ func decodeExtendedRouterFlowRecord(data *[]byte) (SFlowExtendedRouterFlowRecord
 	var fdf SFlowFlowDataFormat
 	var extendedRouterAddressType SFlowIPType
 
+	//fmt.Println("decodeExtendedRouterFlowRecord",data)
 	*data, fdf = (*data)[4:], SFlowFlowDataFormat(binary.BigEndian.Uint32((*data)[:4]))
+	//fmt.Println("decodeExtendedRouterFlowRecord",data)
 	er.EnterpriseID, er.Format = fdf.decode()
 	*data, er.FlowDataLength = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeExtendedRouterFlowRecord er.EnterpriseID, er.Format",data,er.EnterpriseID, er.Format)
 	*data, extendedRouterAddressType = (*data)[4:], SFlowIPType(binary.BigEndian.Uint32((*data)[:4]))
+	//fmt.Println("decodeExtendedRouterFlowRecord extendedRouterAddressType",data,extendedRouterAddressType,extendedRouterAddressType.Length())
 	*data, er.NextHop = (*data)[extendedRouterAddressType.Length():], (*data)[:extendedRouterAddressType.Length()]
+	//fmt.Println("decodeExtendedRouterFlowRecord NextHop",data,er.NextHop)
 	*data, er.NextHopSourceMask = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeExtendedRouterFlowRecord er.NextHopSourceMask",data,er.NextHopSourceMask)
 	*data, er.NextHopDestinationMask = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	//fmt.Println("decodeExtendedRouterFlowRecord er.NextHopDestinationMask",data,er.NextHopDestinationMask)
 	return er, nil
 }
 

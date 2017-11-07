@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/gopacket/layers"
+	"encoding/binary"
 )
 
 // SFlowBaseFlowRecord holds the fields common to all records
@@ -153,6 +154,77 @@ type Data struct {
 	SampleCount     uint32
 }
 
+func NewData() *Data {
+	return &Data{}
+}
+
+func (this *Data) Init(p gopacket.Packet) error {
+	if p.ErrorLayer() != nil {
+		return errors.New(fmt.Sprintf("failed : %s", p.ErrorLayer().Error()))
+	}
+	eth := p.Layer(layers.LayerTypeEthernet)
+	if eth != nil {
+		ethernetPacket,_ := eth.(*layers.Ethernet)
+		this.Datagram.SrcMac = ethernetPacket.SrcMAC.String()
+		this.Datagram.DstMac = ethernetPacket.DstMAC.String()
+	} else {
+		return errors.New("LayerTypeEthernet error")
+	}
+
+	// Let's see if the packet is IP ∂(even though the ether type told us)
+	ipLayer := p.Layer(layers.LayerTypeIPv4)
+	if ipLayer != nil {
+		ip, _ := ipLayer.(*layers.IPv4)
+
+		// IP layer variables:
+		// Version (Either 4 or 6)
+		// IHL (IP Header Length in 32-bit words)
+		// TOS, Length, Id, Flags, FragOffset, TTL, Protocol (TCP?),
+		// Checksum, SrcIP, DstIP
+		this.Datagram.SrcIP = ip.SrcIP.String()
+		this.Datagram.DstIP = ip.DstIP.String()
+	} else {
+		return errors.New("LayerTypeIPv4 error")
+	}
+
+	udpLayer := p.Layer(layers.LayerTypeUDP)
+	if udpLayer != nil {
+		udp, _ := udpLayer.(*layers.UDP)
+		this.Datagram.SrcPort = udp.SrcPort.String()
+		this.Datagram.DstPort = udp.DstPort.String()
+
+		pp := gopacket.NewPacket(udp.Payload, layers.LayerTypeSFlow, gopacket.Default)
+		if pp.ErrorLayer() != nil {
+			//fmt.Println(pp.Data())
+			this.decodeDataFromBytes(pp.Data())
+		}
+		if got, ok := pp.ApplicationLayer().(*layers.SFlowDatagram); ok {
+			this.DatagramVersion = got.DatagramVersion
+			this.AgentAddress = got.AgentAddress
+			this.SubAgentID = got.SubAgentID
+			this.SequenceNumber = got.SequenceNumber
+			this.AgentUptime = got.AgentUptime
+			this.SampleCount = got.SampleCount
+		}
+	} else {
+		return errors.New("LayerTypeUDP error")
+	}
+	return nil
+}
+
+func (this *Data) decodeDataFromBytes(data []byte) error {
+	var agentAddressType layers.SFlowIPType
+
+	data ,this.DatagramVersion = data[4:],binary.BigEndian.Uint32(data[:4])
+	data, agentAddressType = data[4:], layers.SFlowIPType(binary.BigEndian.Uint32(data[:4]))
+	data, this.AgentAddress = data[agentAddressType.Length():], data[:agentAddressType.Length()]
+	data, this.SubAgentID = data[4:], binary.BigEndian.Uint32(data[:4])
+	data, this.SequenceNumber = data[4:], binary.BigEndian.Uint32(data[:4])
+	data, this.AgentUptime = data[4:], binary.BigEndian.Uint32(data[:4])
+	data, this.SampleCount = data[4:], binary.BigEndian.Uint32(data[:4])
+	return nil
+}
+
 //原始报文信息即交换机物理设备信息
 type Datagram struct {
 	SrcMac 	string
@@ -164,7 +236,7 @@ type Datagram struct {
 }
 
 type FlowSamples struct {
-	Data			Data
+	Data			*Data
 	EnterpriseID          string
 	Format                string
 	SampleLength          uint32
@@ -188,6 +260,24 @@ type FlowSamples struct {
 
 func NewFlowSamples() *FlowSamples {
 	return &FlowSamples{}
+}
+
+func (this *FlowSamples) SendUdp(result,CounterHost,Host string, counter bool) {
+	if counter {
+		conn, err := net.Dial("udp", CounterHost)
+		defer conn.Close()
+		if err != nil {
+			panic(err)
+		}
+		conn.Write([]byte(result))
+	} else {
+		conn, err := net.Dial("udp", Host)
+		defer conn.Close()
+		if err != nil {
+			panic(err)
+		}
+		conn.Write([]byte(result))
+	}
 }
 
 func (this *FlowSamples) InitOriginData(p gopacket.Packet) error {
