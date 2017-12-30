@@ -11,7 +11,7 @@ import (
 var Con collected.Collected = collected.Collected{
 	DeviceName:  "en0",
 	SnapShotLen: 65535,
-	Promiscuous: false,
+	Promiscuous: true,
 	Timeout:     30 * time.Second,
 }
 

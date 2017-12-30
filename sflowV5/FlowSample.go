@@ -31,6 +31,7 @@ type Header struct {
 	FlowRecords	uint32  //flow流数据量
 	Packets 	int //包个数
 	Bytes 		uint32 //字节大小
+	RateBytes	uint32 //自动采样率计算
 	SrcMac 		string
 	DstMac 		string
 	SrcIP 		string
@@ -64,6 +65,44 @@ type SFlowExtendedRouterFlowRecord struct {
 	NextHop                net.IP
 	NextHopSourceMask      uint32
 	NextHopDestinationMask uint32
+}
+
+// **************************************************
+//  Packet Ethernet Data Record
+// **************************************************
+
+//  0                      15                      31
+//  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+//  |                     Tag                       |
+//  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+//  |                    Length                     |
+//  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+//  |                  Length Bytes                 |
+//  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+//  |  Src Mac  | Dst Mac   |
+//  +--+--+--+--+--+--+--+--+
+type SFlowEthernetFrameRecord struct {
+	//为2代表是Ethernet Frame Data字段
+	Format uint32
+	//总的字节数（不包含tag和length字段）
+	Length uint32
+	//源mac地址8字节
+	SrcMac []byte
+	//目的mac地址8字节
+	DstMac []byte
+	Type uint32
+}
+
+func decodeSFlowEthernetFrameRecord(data *[]byte) (SFlowEthernetFrameRecord,error) {
+	sef := SFlowEthernetFrameRecord{}
+
+	*data, sef.Format = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	*data, sef.Length = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+	*data, sef.SrcMac = (*data)[6:], (*data)[:6]
+	*data, sef.DstMac = (*data)[6:], (*data)[:6]
+	*data, sef.Type = (*data)[4:], binary.BigEndian.Uint32((*data)[:4])
+
+	return sef, nil
 }
 
 // SFlowExtendedGatewayFlowRecord describes information treasured by
@@ -256,6 +295,7 @@ type FlowSamples struct {
 	SFlowExtendedRouterFlowRecord SFlowExtendedRouterFlowRecord
 	SFlowExtendedGatewayFlowRecord SFlowExtendedGatewayFlowRecord
 	SFlowExtendedUserFlow SFlowExtendedUserFlow
+	//SFlowEthernetFrameRecord SFlowEthernetFrameRecord
 }
 
 func NewFlowSamples() *FlowSamples {
@@ -357,6 +397,7 @@ func (this *FlowSamples) InitFlowSampleData(p layers.SFlowFlowSample) error {
 			this.SFlowRawPacketFlowRecord.HeaderLength = g1.HeaderLength
 			this.SFlowRawPacketFlowRecord.Header.FlowRecords = g1.FlowDataLength
 			this.SFlowRawPacketFlowRecord.Header.Bytes = g1.FrameLength
+			this.SFlowRawPacketFlowRecord.Header.RateBytes = g1.FrameLength * this.SamplingRate
 			this.SFlowRawPacketFlowRecord.Header.Packets = 1
 			this.ParseLayers(g1.Header)
 		} else if g2,ok2 := yy.(layers.SFlowExtendedSwitchFlowRecord); ok2 {
@@ -395,6 +436,13 @@ func (this *FlowSamples) InitFlowSampleData(p layers.SFlowFlowSample) error {
 			this.SFlowExtendedUserFlow.DestinationCharSet = fmt.Sprintf("%v",g5.DestinationCharSet)
 			this.SFlowExtendedUserFlow.DestinationUserID = g5.DestinationUserID
 		}
+		//else if g6,ok6 := yy.(layers.SFlowEthernetFrameRecord); ok6 {
+		//	this.SFlowEthernetFrameRecord.Format = g6.Format
+		//	this.SFlowEthernetFrameRecord.Length = g6.Length
+		//	this.SFlowEthernetFrameRecord.SrcMac = net.HardwareAddr{g6.SrcMac}
+		//	this.SFlowEthernetFrameRecord.DstMac = net.HardwareAddr{g6.DstMac}
+		//	this.SFlowEthernetFrameRecord.Type = g6.Type
+		//}
 	}
 	return nil
 }

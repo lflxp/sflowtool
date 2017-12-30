@@ -168,13 +168,18 @@ func (this *Collected) ListenSFlowSample(protocol, port string) {
 	beego.Informational(fmt.Sprintf("Only capturing %s port %s packets.", protocol, port))
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for packet := range packetSource.Packets() {
+		//this.CheckInfo(packet.Data())
 		Origin := NewData()
 		p := gopacket.NewPacket(packet.Data(), layers.LayerTypeEthernet, gopacket.Default)
 		if p.ErrorLayer() != nil {
 			fmt.Println("failed LayerTypeEthernet:", p.ErrorLayer().Error())
 		}
-		//fmt.Println(p.Dump())
+
 		Origin.Init(p)
+
+		if Origin.AgentAddress.String() == "10.255.255.73" {
+			fmt.Println(p.Dump())
+		}
 
 		//b, err := json.Marshal(Origin)
 		//if err != nil {
@@ -188,11 +193,30 @@ func (this *Collected) ListenSFlowSample(protocol, port string) {
 			udp, _ := udpLayer.(*layers.UDP)
 			pp := gopacket.NewPacket(udp.Payload, layers.LayerTypeSFlow, gopacket.Default)
 			if pp.ErrorLayer() != nil {
-				//fmt.Println("failed LayerTypeSFlow:", pp.ErrorLayer().Error())
+				// fmt.Println("failed LayerTypeSFlow:", pp.ErrorLayer().Error())
+				//ppp := gopacket.NewPacket(udp.Payload,layers.LayerTypeEthernet,gopacket.Default)
+				//if ppp.ErrorLayer() != nil {
+				//	fmt.Println("2  failed LayerTypeEthernet:", ppp.ErrorLayer().Error())
+				//} else {
+				//	fmt.Println(ppp.Data())
+				//	//if got2, ok := ppp.ApplicationLayer().(*layers.SFlowDatagram); ok {
+				//	//	fmt.Println(got2.AgentAddress.String())
+				//	//} else {
+				//	//	fmt.Println("3 ppp failed ApplicationLayer:")
+				//	//}
+				//}
+
+				//this.CheckInfo(udp.Payload)
+
 				go func(data []byte) {
 
 					s := &layers.SFlowDatagram{}
-					s.DecodeSampleFromBytes(data, gopacket.NilDecodeFeedback)
+					//s.DecodeSampleFromBytes(data, gopacket.NilDecodeFeedback)
+					err := s.DecodeSampleFromBytes(data, gopacket.NilDecodeFeedback)
+					if err != nil {
+						//fmt.Println(p.Dump())
+						fmt.Println(err.Error())
+					}
 
 					//b, err := json.Marshal(s)
 					//if err != nil {
@@ -228,50 +252,13 @@ func (this *Collected) ListenSFlowSample(protocol, port string) {
 							this.SendUdp(string(b), false)
 						} else {
 							fmt.Println(s.AgentUptime, n, string(b))
+							//fmt.Println(string(b))
 						}
+						//fmt.Println(tmp.Data.AgentAddress.String(),tmp.SFlowRawPacketFlowRecord.Header.Bytes,n)
 					}
 				}(udp.Payload)
-
-				//s := &layers.SFlowDatagram{}
-				//s.DecodeSampleFromBytes(udp.Payload, gopacket.NilDecodeFeedback)
-
-				////b, err := json.Marshal(s)
-				////if err != nil {
-				////	fmt.Println(err.Error())
-				////}
-				////fmt.Println(data,string(b))
-				//for n, y := range s.FlowSamples {
-				//	tmp := NewFlowSamples()
-				//	tmp.Data = Origin
-				//	//tmp.InitOriginData(p)
-				//	tmp.InitFlowSampleData(y)
-				//	//for num, yy := range y.Records {
-				//	//	if g1, ok1 := yy.(layers.SFlowRawPacketFlowRecord); ok1 {
-				//	//		tmp.ParseLayers(g1.Header)
-				//	//		//fmt.Println(data,s.AgentUptime,n,num,tmp.Data.Datagram.SrcIP,g1.Header.NetworkLayer().NetworkFlow().Src().String(),g1.Header.NetworkLayer().NetworkFlow().Dst().String(), tmp.SFlowRawPacketFlowRecord.Header.Bytes)
-				//	//		b, err := json.Marshal(tmp)
-				//	//		if err != nil {
-				//	//			fmt.Println(err.Error())
-				//	//		}
-				//	//		if this.Udpbool {
-				//	//			this.SendUdp(string(b),false)
-				//	//		} else {
-				//	//			fmt.Println(s.AgentUptime,n,num,string(b))
-				//	//		}
-				//	//	}
-				//	//}
-
-				//	b, err := json.Marshal(tmp)
-				//	if err != nil {
-				//		fmt.Println(err.Error())
-				//	}
-				//	if this.Udpbool {
-				//		this.SendUdp(string(b), false)
-				//	} else {
-				//		fmt.Println(s.SequenceNumber, s.AgentUptime, n, string(b))
-				//	}
-				//}
 			}
+
 			if got, ok := pp.ApplicationLayer().(*layers.SFlowDatagram); ok {
 				//b, err := json.Marshal(got)
 				//if err != nil {
@@ -279,7 +266,7 @@ func (this *Collected) ListenSFlowSample(protocol, port string) {
 				//}
 				//fmt.Println(string(b))
 				go func(datas []layers.SFlowFlowSample, got *layers.SFlowDatagram) {
-					for n, y := range datas {
+					for _, y := range datas {
 						//beego.Critical(len(y.Records),y.RecordCount)
 						tmp := NewFlowSamples()
 						//tmp.InitOriginData(p)
@@ -308,8 +295,9 @@ func (this *Collected) ListenSFlowSample(protocol, port string) {
 						if this.Udpbool {
 							this.SendUdp(string(b), false)
 						} else {
-							fmt.Println(got.AgentUptime, n, string(b))
+							fmt.Println(string(b))
 						}
+						//fmt.Println(tmp.Data.AgentAddress.String(),tmp.SFlowRawPacketFlowRecord.Header.Bytes,n)
 					}
 				}(got.FlowSamples, got)
 			}
