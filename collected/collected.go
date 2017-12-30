@@ -177,9 +177,9 @@ func (this *Collected) ListenSFlowSample(protocol, port string) {
 
 		Origin.Init(p)
 
-		if Origin.AgentAddress.String() == "10.255.255.73" {
-			fmt.Println(p.Dump())
-		}
+		//if Origin.AgentAddress.String() == "10.255.255.73" {
+		//	fmt.Println(p.Dump())
+		//}
 
 		//b, err := json.Marshal(Origin)
 		//if err != nil {
@@ -259,48 +259,48 @@ func (this *Collected) ListenSFlowSample(protocol, port string) {
 				}(udp.Payload)
 			}
 
-			if got, ok := pp.ApplicationLayer().(*layers.SFlowDatagram); ok {
-				//b, err := json.Marshal(got)
-				//if err != nil {
-				//	fmt.Println(err.Error())
-				//}
-				//fmt.Println(string(b))
-				go func(datas []layers.SFlowFlowSample, got *layers.SFlowDatagram) {
-					for _, y := range datas {
-						//beego.Critical(len(y.Records),y.RecordCount)
-						tmp := NewFlowSamples()
-						//tmp.InitOriginData(p)
-						tmp.Data = Origin
-						tmp.InitFlowSampleData(y)
-						//for m, yy := range y.Records {
-						//	if g1, ok1 := yy.(layers.SFlowRawPacketFlowRecord); ok1 {
-						//		tmp.ParseLayers(g1.Header)
-						//		//fmt.Println(got.AgentUptime,n,num,tmp.Data.Datagram.SrcIP, tmp.SFlowRawPacketFlowRecord.Header.Bytes)
-						//		b, err := json.Marshal(tmp)
-						//		if err != nil {
-						//			fmt.Println(err.Error())
-						//		}
-						//		if this.Udpbool {
-						//			this.SendUdp(string(b),false)
-						//		} else {
-						//			fmt.Println(got.AgentUptime,n,m,string(b))
-						//		}
-						//	}
-						//}
+			//if got, ok := pp.ApplicationLayer().(*layers.SFlowDatagram); ok {
+			//	//b, err := json.Marshal(got)
+			//	//if err != nil {
+			//	//	fmt.Println(err.Error())
+			//	//}
+			//	//fmt.Println(string(b))
+			//	go func(datas []layers.SFlowFlowSample, got *layers.SFlowDatagram) {
+			//		for _, y := range datas {
+			//			//beego.Critical(len(y.Records),y.RecordCount)
+			//			tmp := NewFlowSamples()
+			//			//tmp.InitOriginData(p)
+			//			tmp.Data = Origin
+			//			tmp.InitFlowSampleData(y)
+			//			//for m, yy := range y.Records {
+			//			//	if g1, ok1 := yy.(layers.SFlowRawPacketFlowRecord); ok1 {
+			//			//		tmp.ParseLayers(g1.Header)
+			//			//		//fmt.Println(got.AgentUptime,n,num,tmp.Data.Datagram.SrcIP, tmp.SFlowRawPacketFlowRecord.Header.Bytes)
+			//			//		b, err := json.Marshal(tmp)
+			//			//		if err != nil {
+			//			//			fmt.Println(err.Error())
+			//			//		}
+			//			//		if this.Udpbool {
+			//			//			this.SendUdp(string(b),false)
+			//			//		} else {
+			//			//			fmt.Println(got.AgentUptime,n,m,string(b))
+			//			//		}
+			//			//	}
+			//			//}
 
-						b, err := json.Marshal(tmp)
-						if err != nil {
-							fmt.Println(err.Error())
-						}
-						if this.Udpbool {
-							this.SendUdp(string(b), false)
-						} else {
-							fmt.Println(string(b))
-						}
-						//fmt.Println(tmp.Data.AgentAddress.String(),tmp.SFlowRawPacketFlowRecord.Header.Bytes,n)
-					}
-				}(got.FlowSamples, got)
-			}
+			//			b, err := json.Marshal(tmp)
+			//			if err != nil {
+			//				fmt.Println(err.Error())
+			//			}
+			//			if this.Udpbool {
+			//				this.SendUdp(string(b), false)
+			//			} else {
+			//				fmt.Println(string(b))
+			//			}
+			//			//fmt.Println(tmp.Data.AgentAddress.String(),tmp.SFlowRawPacketFlowRecord.Header.Bytes,n)
+			//		}
+			//	}(got.FlowSamples, got)
+			//}
 		}
 	}
 }
