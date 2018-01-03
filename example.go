@@ -3,9 +3,10 @@ package main
 import (
 	"flag"
 	//	"github.com/google/gopacket/afpacket"
-	"github.com/lflxp/sflowtool/collected"
 	"net"
 	"time"
+
+	"github.com/lflxp/sflowtool/collected"
 )
 
 var Con collected.Collected = collected.Collected{
@@ -40,9 +41,9 @@ func main() {
 	}
 
 	if *item == "all" {
-		SflowAll(*protocol, *port)
+		// SflowAll(*protocol, *port)
 	} else if *item == "counter" {
-		SflowCounter(*protocol, *port)
+		// SflowCounter(*protocol, *port)
 	} else if *item == "sample" {
 		SflowSample(*protocol, *port)
 	} else if *item == "netflow" {
@@ -52,18 +53,18 @@ func main() {
 	<-wait
 }
 
-func SflowCounter(protocol, port string) {
-	Con.ListenSflowCounter(protocol, port)
-}
+// func SflowCounter(protocol, port string) {
+// 	Con.ListenSflowCounter(protocol, port)
+// }
 
 func SflowSample(protocol, port string) {
 	Con.ListenSFlowSample(protocol, port)
 }
 
 //include SFlowSample and SflowCounter
-func SflowAll(protocol, port string) {
-	Con.ListenSflowAll(protocol, port)
-}
+// func SflowAll(protocol, port string) {
+// 	Con.ListenSflowAll(protocol, port)
+// }
 
 func NetflowV5(protocol, port string) {
 	Con.ListenNetFlowV5(protocol, port)

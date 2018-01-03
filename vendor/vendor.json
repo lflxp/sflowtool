@@ -57,22 +57,22 @@
 			"revisionTime": "2017-09-08T22:29:59Z"
 		},
 		{
-			"checksumSHA1": "CArPEPoLJwoKIPA+y0fBpbUMgr8=",
+			"checksumSHA1": "Uaj9uu59It0BlmgsFa0ZO3zEjrE=",
 			"path": "github.com/google/gopacket",
-			"revision": "26ec6f897fc7b8152729c2f52f91dfa54c791ca1",
-			"revisionTime": "2017-09-16T22:31:43Z"
+			"revision": "93226cc8c82f71d90f346f89793c7864de983435",
+			"revisionTime": "2018-01-02T11:20:13Z"
 		},
 		{
-			"checksumSHA1": "PtXIjVa+H+JB4tf5ptb5n8mZ5Ro=",
+			"checksumSHA1": "Yk1jaU9rdAXxKk60XwA6tgbdyVI=",
 			"path": "github.com/google/gopacket/layers",
-			"revision": "26ec6f897fc7b8152729c2f52f91dfa54c791ca1",
-			"revisionTime": "2017-09-16T22:31:43Z"
+			"revision": "93226cc8c82f71d90f346f89793c7864de983435",
+			"revisionTime": "2018-01-02T11:20:13Z"
 		},
 		{
-			"checksumSHA1": "5adfB3KuxBKYp/GgRv+P9FIsA/k=",
+			"checksumSHA1": "wd3QYaS5550byZhwbhkjhuOOMnM=",
 			"path": "github.com/google/gopacket/pcap",
-			"revision": "26ec6f897fc7b8152729c2f52f91dfa54c791ca1",
-			"revisionTime": "2017-09-16T22:31:43Z"
+			"revision": "93226cc8c82f71d90f346f89793c7864de983435",
+			"revisionTime": "2018-01-02T11:20:13Z"
 		}
 	],
 	"rootPath": "github.com/lflxp/sflowtool"
