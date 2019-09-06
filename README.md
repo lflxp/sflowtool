@@ -20,27 +20,42 @@ go get [github.com/lflxp//sflowtool](https://github.com/lflxp//sflowtool)
 
 # Usage
 
+> sudo ./sflowtool -ee enp1s0 -p 9999 -t all -ises
 
 ```
 Usage of ./sflowtool:
   -chost string
     	udp CounterSample 传输主机:端口 (default "127.0.0.1:7777")
-  -e string
+  -d string
+    	Enable certain debug selectors
+  -debug
+    	是否开启debug model
+  -e	Log to stderr and disable syslog/file output
+  -ee string
     	网卡名 (default "en0")
+  -es string
+    	elasticsearch 5.6 接口地址 (default "http://127.0.0.1:9200")
   -graceful
     	listen on open fd (after forking)
   -host string
     	udp SFlowSample And Netflow 传输主机:端口 (default "127.0.0.1:6666")
+  -index string
+    	es index name, example: sflow-2019-09-06 (default "sflow")
+  -ises
+    	是否开启output到elasticsearch
   -p string
     	端口 (default "6343")
   -s string
     	协议 (default "udp")
   -socketorder string
     	previous initialization order - used when more than one listener was started
+  -strict.perms
+    	Strict permission checking on config files (default true)
   -t string
     	类型:all(sflowSample|Counter),counter(SflowCounter),sample(SflowSample),netflow (default "all")
   -udp
     	是否开启udp数据传输,默认不开启
+  -v	Log at INFO level
 
 ```
 
