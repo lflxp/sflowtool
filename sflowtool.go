@@ -43,7 +43,7 @@ func main() {
 
 	// 初始化es index
 	if Con.IsEs {
-		log.Info("开启es通道")
+		log.Infof("开启es通道 EsPath: %s Index: %s\n", Con.EsPath, Con.Index)
 		parse.InitEs(Con.EsPath, Con.Index)
 	}
 

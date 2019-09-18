@@ -55,21 +55,24 @@ func BulkAdd(data []string) error {
 	log.Debugf("开始批量导入 %d", len(data))
 	bulkRequest := client.Bulk()
 	for n, x := range data {
-		log.Debugf("%s %d 装载批量弹药 %d Pool %d", fmt.Sprintf("ABC%d%d", time.Now().UnixNano(), n), n, len(DataChannel), len(dataPool))
+		log.Debugf("%s %d 装载批量弹药 %d Pool %d index %s", fmt.Sprintf("ABC%d%d", time.Now().UnixNano(), n), n, len(DataChannel), len(dataPool), index)
 		req := elastic.NewBulkIndexRequest().Index(index).Type("doc").Id(fmt.Sprintf("ABC%d%d", time.Now().UnixNano(), n)).Doc(x)
 		bulkRequest = bulkRequest.Add(req)
 	}
 	bulkResponse, err := bulkRequest.Do(context.Background())
 	if err != nil {
+		log.Debug(err)
 		return err
 	}
 	if bulkResponse != nil {
 		indexed := bulkResponse.Indexed()
-		if len(indexed) != 1 {
-			log.Debug("indexed is not length 1")
-		}
+		log.Infof("向es导入了 %d 条数据\n", len(indexed))
 		if indexed[0].Status != 201 {
-			log.Error("Status ", indexed[0].Status)
+			for _, x := range indexed {
+				if x.Error != nil {
+					log.Errorf("Status: %d Result: %s Error(reason): %s\n", x.Status, x.Result, x.Error.Reason)
+				}
+			}
 		}
 	}
 	return nil
