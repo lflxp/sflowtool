@@ -34,6 +34,8 @@ github.com/elastic/go-ucfg/parse
 github.com/elastic/go-ucfg/yaml
 # github.com/elastic/go-windows v1.0.0
 github.com/elastic/go-windows
+# github.com/gofrs/uuid v3.2.0+incompatible
+## explicit
 # github.com/google/gopacket v1.1.17
 ## explicit
 github.com/google/gopacket
@@ -50,11 +52,14 @@ github.com/mailru/easyjson/jlexer
 github.com/mailru/easyjson/jwriter
 # github.com/pkg/errors v0.8.1
 github.com/pkg/errors
-# github.com/prometheus/procfs v0.0.0-20190425082905-87a4384529e0
+# github.com/prometheus/procfs v0.0.0-20190507164030-5867b95ac084
 github.com/prometheus/procfs
+github.com/prometheus/procfs/internal/fs
 # github.com/sirupsen/logrus v1.4.2
 ## explicit
 github.com/sirupsen/logrus
+# github.com/spf13/cobra v0.0.6
+## explicit
 # go.uber.org/atomic v1.6.0
 go.uber.org/atomic
 # go.uber.org/multierr v1.5.0
