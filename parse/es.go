@@ -21,7 +21,33 @@ var DataChannel chan string
 func init() {
 	dataPool = []string{}
 	DataChannel = make(chan string, 1000)
+}
 
+func BulkAdd(data []string) error {
+	log.Debugf("开始批量导入 %d", len(data))
+	bulkRequest := client.Bulk()
+	for n, x := range data {
+		log.Debugf("%s %d 装载批量弹药 %d Pool %d", fmt.Sprintf("ABC%d%d", time.Now().UnixNano(), n), n, len(DataChannel), len(dataPool))
+		req := elastic.NewBulkIndexRequest().Index(index).Type("doc").Id(fmt.Sprintf("ABC%d%d", time.Now().UnixNano(), n)).Doc(x)
+		bulkRequest = bulkRequest.Add(req)
+	}
+	bulkResponse, err := bulkRequest.Do(context.Background())
+	if err != nil {
+		return err
+	}
+	if bulkResponse != nil {
+		indexed := bulkResponse.Indexed()
+		if len(indexed) != 1 {
+			log.Debug("indexed is not length 1")
+		}
+		if indexed[0].Status != 201 {
+			log.Error("Status ", indexed[0].Status)
+		}
+	}
+	return nil
+}
+
+func InitEs(hostUrl, indexName string) {
 	go func() {
 		log.Info("开启发送通道")
 		var mutex sync.Mutex
@@ -49,36 +75,6 @@ func init() {
 			}
 		}
 	}()
-}
-
-func BulkAdd(data []string) error {
-	log.Debugf("开始批量导入 %d", len(data))
-	bulkRequest := client.Bulk()
-	for n, x := range data {
-		log.Debugf("%s %d 装载批量弹药 %d Pool %d index %s", fmt.Sprintf("ABC%d%d", time.Now().UnixNano(), n), n, len(DataChannel), len(dataPool), index)
-		req := elastic.NewBulkIndexRequest().Index(index).Type("doc").Id(fmt.Sprintf("ABC%d%d", time.Now().UnixNano(), n)).Doc(x)
-		bulkRequest = bulkRequest.Add(req)
-	}
-	bulkResponse, err := bulkRequest.Do(context.Background())
-	if err != nil {
-		log.Debug(err)
-		return err
-	}
-	if bulkResponse != nil {
-		indexed := bulkResponse.Indexed()
-		log.Infof("向es导入了 %d 条数据\n", len(indexed))
-		if indexed[0].Status != 201 {
-			for _, x := range indexed {
-				if x.Error != nil {
-					log.Errorf("Status: %d Result: %s Error(reason): %s\n", x.Status, x.Result, x.Error.Reason)
-				}
-			}
-		}
-	}
-	return nil
-}
-
-func InitEs(hostUrl, indexName string) {
 	// errorlog := log.New(os.Stdout, "APP", log.LstdFlags)
 	var err error
 	// client, err = elastic.NewClient(elastic.SetErrorLog(errorlog), elastic.SetURL(hostUrl))
@@ -130,6 +126,7 @@ func InitEs(hostUrl, indexName string) {
 		for {
 			<-t.C
 			if index != fmt.Sprintf("%s-%s", name, time.Now().Format("2006-01-02")) {
+				index = fmt.Sprintf("%s-%s", name, time.Now().Format("2006-01-02"))
 				exists, err := client.IndexExists(index).Do(context.Background())
 				if err != nil {
 					// Handle error

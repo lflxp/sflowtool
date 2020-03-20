@@ -23,7 +23,7 @@ const mapping = `
                     "type": "keyword"
                 },
                 "SrcPort": {
-                    "type": "keyword"
+                    "type": "long"
                 },
                 "DstPort": {
                     "type": "keyword"

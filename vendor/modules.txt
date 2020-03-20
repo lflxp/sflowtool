@@ -1,0 +1,84 @@
+# github.com/astaxie/beego v1.9.1-0.20170908222959-3162da131da6
+## explicit
+github.com/astaxie/beego
+github.com/astaxie/beego/config
+github.com/astaxie/beego/context
+github.com/astaxie/beego/context/param
+github.com/astaxie/beego/grace
+github.com/astaxie/beego/logs
+github.com/astaxie/beego/session
+github.com/astaxie/beego/toolbox
+github.com/astaxie/beego/utils
+# github.com/elastic/beats v7.6.1+incompatible
+## explicit
+github.com/elastic/beats/libbeat/common
+github.com/elastic/beats/libbeat/common/file
+github.com/elastic/beats/libbeat/logp
+github.com/elastic/beats/libbeat/paths
+# github.com/elastic/go-sysinfo v1.3.0
+## explicit
+github.com/elastic/go-sysinfo
+github.com/elastic/go-sysinfo/internal/registry
+github.com/elastic/go-sysinfo/providers/darwin
+github.com/elastic/go-sysinfo/providers/linux
+github.com/elastic/go-sysinfo/providers/shared
+github.com/elastic/go-sysinfo/providers/windows
+github.com/elastic/go-sysinfo/types
+# github.com/elastic/go-ucfg v0.8.3
+## explicit
+github.com/elastic/go-ucfg
+github.com/elastic/go-ucfg/cfgutil
+github.com/elastic/go-ucfg/flag
+github.com/elastic/go-ucfg/json
+github.com/elastic/go-ucfg/parse
+github.com/elastic/go-ucfg/yaml
+# github.com/elastic/go-windows v1.0.0
+github.com/elastic/go-windows
+# github.com/google/gopacket v1.1.17
+## explicit
+github.com/google/gopacket
+github.com/google/gopacket/layers
+github.com/google/gopacket/pcap
+# github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
+github.com/joeshaw/multierror
+# github.com/konsorten/go-windows-terminal-sequences v1.0.1
+github.com/konsorten/go-windows-terminal-sequences
+# github.com/mailru/easyjson v0.0.0-20180730094502-03f2033d19d5
+github.com/mailru/easyjson
+github.com/mailru/easyjson/buffer
+github.com/mailru/easyjson/jlexer
+github.com/mailru/easyjson/jwriter
+# github.com/pkg/errors v0.8.1
+github.com/pkg/errors
+# github.com/prometheus/procfs v0.0.0-20190425082905-87a4384529e0
+github.com/prometheus/procfs
+# github.com/sirupsen/logrus v1.4.2
+## explicit
+github.com/sirupsen/logrus
+# go.uber.org/atomic v1.6.0
+go.uber.org/atomic
+# go.uber.org/multierr v1.5.0
+go.uber.org/multierr
+# go.uber.org/zap v1.14.1
+## explicit
+go.uber.org/zap
+go.uber.org/zap/buffer
+go.uber.org/zap/internal/bufferpool
+go.uber.org/zap/internal/color
+go.uber.org/zap/internal/exit
+go.uber.org/zap/zapcore
+go.uber.org/zap/zaptest/observer
+# golang.org/x/sys v0.0.0-20191025021431-6c3a3bfe00ae
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+golang.org/x/sys/windows/registry
+golang.org/x/sys/windows/svc/eventlog
+# gopkg.in/olivere/elastic.v5 v5.0.84
+## explicit
+gopkg.in/olivere/elastic.v5
+gopkg.in/olivere/elastic.v5/config
+gopkg.in/olivere/elastic.v5/uritemplates
+# gopkg.in/yaml.v2 v2.2.2
+gopkg.in/yaml.v2
+# howett.net/plist v0.0.0-20181124034731-591f970eefbb
+howett.net/plist
